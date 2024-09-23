@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant Finder</title>
+    <!-- Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCP6CL_9cDOgF4bPxxHWD-o7sg0_BUEhFI&callback=initMap&libraries=places" async defer></script>
+
+    <script>
+        let map;
+
+        function initMap() {
+            // Initialize the map with a default center
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: -34.397, lng: 150.644},  // Default center (adjust as necessary)
+                zoom: 8
+            });
+
+            // Add restaurant markers from the data passed by Django
+            const restaurants = JSON.parse(document.getElementById('restaurant-data').textContent);
+            restaurants.forEach((restaurant) => {
+                const marker = new google.maps.Marker({
+                    position: {lat: parseFloat(restaurant.latitude), lng: parseFloat(restaurant.longitude)},
+                    map: map,
+                    title: restaurant.name
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Restaurant Finder</h1>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
+    <!-- Pass restaurant data from the Django view to the template -->
+    <script id="restaurant-data" type="application/json">{{ restaurant_data_json|safe }}</script>
+</body>
+</html>
