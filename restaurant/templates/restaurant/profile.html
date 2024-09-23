@@ -1,0 +1,7 @@
+<h2>Your Favorite Restaurants</h2>
+<ul>
+    {% for favorite in favorites %}
+        <li>{{ favorite.restaurant.name }}</li>
+        <a href="{% url 'add_to_favorites' favorite.restaurant.id %}">Add to Favorites</a>
+    {% endfor %}
+</ul>
