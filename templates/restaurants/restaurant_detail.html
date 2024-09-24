@@ -1,0 +1,220 @@
+<!-- restaurant_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ details.name|default:"Unknown" }} - Atlanta Food Finder</title>
+    <!-- Include SweetAlert for enhanced notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+        }
+        .favorite-button {
+            padding: 8px 15px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+        .favorite-button.remove {
+            background-color: #555;
+        }
+        .review-form {
+            margin-top: 30px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .reviews {
+            margin-top: 30px;
+        }
+        .review {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        .review h4 {
+            margin: 0 0 5px 0;
+        }
+        .review p {
+            margin: 5px 0;
+        }
+        .review p em {
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+    <!-- Include jQuery for AJAX functionality -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // CSRF Token Setup
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $(document).ready(function(){
+            $('#add-favorite').click(function(){
+                const place_id = $(this).data('place-id');
+                const name = $(this).data('name');
+                const address = $(this).data('address');
+                const rating = $(this).data('rating');
+
+                addFavorite(place_id, name, address, rating);
+            });
+
+            $('#remove-favorite').click(function(){
+                const place_id = $(this).data('place-id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to remove this restaurant from your favorites?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ff6347',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        removeFavorite(place_id);
+                    }
+                });
+            });
+        });
+
+        function addFavorite(place_id, name, address, rating) {
+            $.ajax({
+                url: "{% url 'add_favorite' %}",
+                method: "POST",
+                data: {
+                    'place_id': place_id,
+                    'name': name,
+                    'address': address,
+                    'rating': rating
+                },
+                success: function(response){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                },
+                error: function(xhr){
+                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMsg,
+                    });
+                }
+            });
+        }
+
+        function removeFavorite(place_id) {
+            $.ajax({
+                url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
+                method: "POST",
+                success: function(response){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removed!',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                },
+                error: function(xhr){
+                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMsg,
+                    });
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+            <p>{{ error }}</p>
+        {% else %}
+            <h2>{{ details.name|default:"Unknown" }}</h2>
+            <p><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
+            <p><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
+            <p><strong>Opening Hours:</strong></p>
+            <ul>
+                {% for day in details.opening_hours.weekday_text %}
+                    <li>{{ day }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Reviews:</h3>
+            <div class="reviews">
+                {% for review in user_reviews %}
+                    <div class="review">
+                        <h4>{{ review.user.username }} - Rating: {{ review.rating }}</h4>
+                        <p>{{ review.comment }}</p>
+                        <p><em>Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</em></p>
+                    </div>
+                {% empty %}
+                    <p>No reviews yet. Be the first to review!</p>
+                {% endfor %}
+            </div>
+
+            <h3>Write a Review:</h3>
+            <div class="review-form">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+
+            {% if user.is_authenticated %}
+                {% if is_favorite %}
+                    <button id="remove-favorite" class="favorite-button remove" data-place-id="{{ details.place_id }}">Remove from Favorites</button>
+                {% else %}
+                    <button id="add-favorite" class="favorite-button" data-place-id="{{ details.place_id }}" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">Add to Favorites</button>
+                {% endif %}
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to save this restaurant to your favorites.</p>
+            {% endif %}
+        {% endif %}
+        <p><a href="{% url 'map' %}">Back to Map</a></p>
+    </div>
+</body>
+</html>

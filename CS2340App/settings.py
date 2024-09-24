@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'restaurants',
-    'django_google_maps',
+    'django_google_maps',  # Ensure this app is properly configured
 ]
 
 MIDDLEWARE = [
@@ -56,12 +56,12 @@ ROOT_URLCONF = 'CS2340App.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # Add this line to point to your global templates folder
-        'APP_DIRS': True,  # This allows Django to search for app-specific templates too
+        'DIRS': [BASE_DIR / "templates"],  # Global templates directory
+        'APP_DIRS': True,  # Allows Django to search for app-specific templates
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Required for auth views
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -92,6 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},  # Enforce a minimum password length
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -123,3 +124,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY = 'AIzaSyCP6CL_9cDOgF4bPxxHWD-o7sg0_BUEhFI'  # Replace with your actual API key
+
+# Email Backend Configuration for Password Reset
+# For development, emails are printed to the console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Redirect to 'profile' page after login
+LOGIN_REDIRECT_URL = 'profile'

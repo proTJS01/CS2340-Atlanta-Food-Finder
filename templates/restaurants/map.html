@@ -1,37 +1,272 @@
+<!-- map.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Restaurant Finder</title>
-    <!-- Google Maps JavaScript API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCP6CL_9cDOgF4bPxxHWD-o7sg0_BUEhFI&callback=initMap&libraries=places" async defer></script>
-
+    <style>
+        /* Ensure the map has a defined height and width */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        /* Style the InfoWindow content */
+        .info-window {
+            font-family: Arial, sans-serif;
+            max-width: 300px;
+        }
+        .info-window h3 {
+            margin-top: 0;
+        }
+        .favorite-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .favorite-button.remove {
+            background-color: #555;
+        }
+    </style>
+    <!-- Load the Google Maps JavaScript API with Places library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
+    <!-- Load SweetAlert and jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        let map;
+        // CSRF Token Setup
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
 
-        function initMap() {
-            // Initialize the map with a default center
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        let map;
+        let service;
+        let infoWindow;
+
+        window.initMap = function() {  // Ensure initMap is global
+            // Initialize the map centered on Atlanta
             map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: -34.397, lng: 150.644},  // Default center (adjust as necessary)
-                zoom: 8
+                center: { lat: 33.7490, lng: -84.3880 },  // Atlanta coordinates
+                zoom: 12
             });
 
-            // Add restaurant markers from the data passed by Django
-            const restaurants = JSON.parse(document.getElementById('restaurant-data').textContent);
-            restaurants.forEach((restaurant) => {
-                const marker = new google.maps.Marker({
-                    position: {lat: parseFloat(restaurant.latitude), lng: parseFloat(restaurant.longitude)},
-                    map: map,
-                    title: restaurant.name
+            // Initialize the Places service
+            service = new google.maps.places.PlacesService(map);
+
+            // Create an InfoWindow for displaying details
+            infoWindow = new google.maps.InfoWindow();
+
+            // Attempt to get the user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        map.setCenter(userLocation);
+                        searchNearbyRestaurants(userLocation);
+                    },
+                    () => {
+                        // If user denies geolocation, search around default center
+                        searchNearbyRestaurants();
+                    }
+                );
+            } else {
+                // Browser doesn't support Geolocation
+                searchNearbyRestaurants();
+            }
+        }
+
+        function searchNearbyRestaurants(location = map.getCenter()) {
+            const request = {
+                location: location,
+                radius: '5000',  // Radius in meters (5 km)
+                type: ['restaurant']
+            };
+
+            // Perform the nearby search
+            service.nearbySearch(request, handleSearchResults);
+        }
+
+        function handleSearchResults(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                results.forEach(place => {
+                    addMarkerForRestaurant(place);
                 });
+            } else {
+                console.error("Error fetching nearby restaurants:", status);
+            }
+        }
+
+        function addMarkerForRestaurant(place) {
+            const marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location,
+                title: place.name
+            });
+
+            marker.addListener('click', () => {
+                service.getDetails(
+                    {
+                        placeId: place.place_id,
+                        fields: ['name', 'formatted_address', 'rating', 'reviews', 'opening_hours']  // Specify required fields
+                    },
+                    (details, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            let favoriteButton = '';
+                            {% if user.is_authenticated %}
+                                {% with user_favorites=user_favorites %}
+                                    {% if place.place_id in user_favorites %}
+                                        favoriteButton = `<button class="favorite-button remove" data-place-id="${details.place_id}">Remove from Favorites</button>`;
+                                    {% else %}
+                                        favoriteButton = `<button class="favorite-button add" data-place-id="${details.place_id}" data-name="${details.name || 'Unknown'}" data-address="${details.formatted_address || 'No address available'}" data-rating="${details.rating || ''}">Add to Favorites</button>`;
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                favoriteButton = `<p><a href="{% url 'login' %}">Login</a> to save this restaurant to your favorites.</p>`;
+                            {% endif %}
+
+                            const content = `
+                                <div class="info-window">
+                                    <h3>${details.name || 'Unknown'}</h3>
+                                    <p>Address: ${details.formatted_address || 'No address available'}</p>
+                                    <p>Rating: ${details.rating || 'No rating available'}</p>
+                                    <p><strong>Reviews:</strong><br>${details.reviews ? details.reviews.slice(0, 3).map(r => r.text).join('<br><br>') : 'No reviews available'}</p>
+                                    <p><strong>Opening Hours:</strong><br>${details.opening_hours ? details.opening_hours.weekday_text.join('<br>') : 'No hours available'}</p>
+                                    ${favoriteButton}
+                                </div>
+                            `;
+                            infoWindow.setContent(content);
+                            infoWindow.open(map, marker);
+
+                            // Attach event listeners to the favorite buttons
+                            attachFavoriteHandlers();
+                        } else {
+                            console.error("Error fetching restaurant details:", status);
+                            infoWindow.setContent(`<p>Error fetching details for ${place.name}</p>`);
+                            infoWindow.open(map, marker);
+                        }
+                    }
+                );
+            });
+        }
+
+        function attachFavoriteHandlers(){
+            $('.favorite-button.add').click(function(){
+                const place_id = $(this).data('place-id');
+                const name = $(this).data('name');
+                const address = $(this).data('address');
+                const rating = $(this).data('rating');
+
+                addFavorite(place_id, name, address, rating);
+            });
+
+            $('.favorite-button.remove').click(function(){
+                const place_id = $(this).data('place-id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to remove this restaurant from your favorites?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ff6347',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        removeFavorite(place_id);
+                    }
+                });
+            });
+        }
+
+        function addFavorite(place_id, name, address, rating) {
+            $.ajax({
+                url: "{% url 'add_favorite' %}",
+                method: "POST",
+                data: {
+                    'place_id': place_id,
+                    'name': name,
+                    'address': address,
+                    'rating': rating
+                },
+                success: function(response){
+                    Swal.fire({
+                        icon: 'success', 
+                        title: 'Success',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false 
+                    });
+                    infoWindow.close();
+                },
+                error: function(xhr) {
+                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMsg,
+                    });
+                }        
+            });
+        }
+
+        function removeFavorite(place_id) {
+            $.ajax({
+                url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
+                method: "POST",
+                success: function(response){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removed!',
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    infoWindow.close();
+                },
+                error: function(xhr){
+                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMsg,
+                    });
+                }
             });
         }
     </script>
 </head>
 <body>
     <h1>Restaurant Finder</h1>
-    <div id="map" style="height: 500px; width: 100%;"></div>
-
-    <!-- Pass restaurant data from the Django view to the template -->
-    <script id="restaurant-data" type="application/json">{{ restaurant_data_json|safe }}</script>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}! <a href="{% url 'profile' %}">Profile</a> | <a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
+    {% endif %}
+    <div id="map"></div>
 </body>
 </html>
