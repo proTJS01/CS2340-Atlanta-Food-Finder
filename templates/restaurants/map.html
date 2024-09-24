@@ -1,4 +1,4 @@
-<!-- map.html -->
+<!-- templates/restaurants/map.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,13 +29,40 @@
         .favorite-button.remove {
             background-color: #555;
         }
+        /* Style for the search form */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-container input,
+        .search-container select {
+            padding: 8px;
+            font-size: 16px;
+        }
+        .search-container button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .search-container button:hover {
+            background-color: #e5533d;
+        }
     </style>
-    <!-- Load the Google Maps JavaScript API with Places library -->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
+    <!-- Load the Google Maps JavaScript API with Places and Geometry libraries and callback -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
     <!-- Load SweetAlert and jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Inject userFavorites as a JavaScript array
+        const userFavorites = {{ user_favorites|safe }};
+    
         // CSRF Token Setup
         function getCookie(name) {
             let cookieValue = null;
@@ -52,7 +79,7 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
-
+    
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
@@ -60,24 +87,25 @@
                 }
             }
         });
-
+    
         let map;
         let service;
         let infoWindow;
-
-        window.initMap = function() {  // Ensure initMap is global
+        let markers = [];
+    
+        function initMap() {  // Ensure initMap is global
             // Initialize the map centered on Atlanta
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 33.7490, lng: -84.3880 },  // Atlanta coordinates
                 zoom: 12
             });
-
+    
             // Initialize the Places service
             service = new google.maps.places.PlacesService(map);
-
+    
             // Create an InfoWindow for displaying details
             infoWindow = new google.maps.InfoWindow();
-
+    
             // Attempt to get the user's current location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -99,94 +127,183 @@
                 searchNearbyRestaurants();
             }
         }
-
-        function searchNearbyRestaurants(location = map.getCenter()) {
+    
+        // Function to clear existing markers
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+    
+        // Function to search for restaurants
+        function searchNearbyRestaurants(location = map.getCenter(), radius = 10000, name = '', cuisine = '', rating = '', distance = '') {
+            clearMarkers();
+    
+            const keyword = (name + ' ' + cuisine).trim();
+    
             const request = {
                 location: location,
-                radius: '5000',  // Radius in meters (5 km)
-                type: ['restaurant']
+                radius: radius.toString(),  // Convert to string as per API requirement
+                type: ['restaurant'],
+                keyword: keyword  // Combine name and cuisine for keyword search
             };
-
+    
             // Perform the nearby search
-            service.nearbySearch(request, handleSearchResults);
+            service.nearbySearch(request, function(results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    results.forEach(place => {
+                        // Apply distance filter if specified
+                        if (distance) {
+                            const distanceInt = parseInt(distance);
+                            const placeLocation = place.geometry.location;
+                            const userLocation = location;
+                            const placeDistance = google.maps.geometry.spherical.computeDistanceBetween(placeLocation, userLocation);
+                            if (placeDistance <= distanceInt) {
+                                // Apply rating filter if specified
+                                if (rating) {
+                                    if (place.rating && place.rating >= parseFloat(rating)) {
+                                        addMarkerForRestaurant(place);
+                                    }
+                                } else {
+                                    addMarkerForRestaurant(place);
+                                }
+                            }
+                        } else {
+                            // Apply rating filter if specified
+                            if (rating) {
+                                if (place.rating && place.rating >= parseFloat(rating)) {
+                                    addMarkerForRestaurant(place);
+                                }
+                            } else {
+                                addMarkerForRestaurant(place);
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Error fetching nearby restaurants:", status);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Unable to fetch restaurants. Please try again later.'
+                    });
+                }
+            });
         }
-
-        function handleSearchResults(results, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                results.forEach(place => {
-                    addMarkerForRestaurant(place);
+    
+        // Function to handle search button click
+        function handleSearchButtonClick() {
+            const name = $('#search-name').val().trim();
+            const cuisine = $('#search-cuisine').val().trim();
+            const location = $('#search-location').val().trim();
+            const rating = $('#filter-rating').val();
+            const distance = $('#filter-distance').val();
+    
+            // Geocode the location if provided
+            if (location) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'address': location }, function(results, status) {
+                    if (status === 'OK') {
+                        const userLocation = results[0].geometry.location;
+                        map.setCenter(userLocation);
+                        const radius = distance ? distance : 10000;  // Default radius or based on distance filter
+                        searchNearbyRestaurants(userLocation, radius, name, cuisine, rating, distance);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Geocode Error',
+                            text: 'Unable to geocode the provided location. Please enter a valid address.'
+                        });
+                    }
                 });
             } else {
-                console.error("Error fetching nearby restaurants:", status);
+                // Use current map center
+                const currentLocation = map.getCenter();
+                const radius = distance ? distance : 10000;  // Default radius or based on distance filter
+                searchNearbyRestaurants(currentLocation, radius, name, cuisine, rating, distance);
             }
         }
-
+    
+        // Function to add a marker for a restaurant
         function addMarkerForRestaurant(place) {
             const marker = new google.maps.Marker({
                 map: map,
                 position: place.geometry.location,
                 title: place.name
             });
-
+    
+            markers.push(marker);
+    
             marker.addListener('click', () => {
                 service.getDetails(
                     {
                         placeId: place.place_id,
-                        fields: ['name', 'formatted_address', 'rating', 'reviews', 'opening_hours']  // Specify required fields
+                        fields: ['name', 'formatted_address', 'rating', 'reviews', 'opening_hours', 'place_id']  // Added 'place_id' here
                     },
                     (details, status) => {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
                             let favoriteButton = '';
-                            {% if user.is_authenticated %}
-                                {% with user_favorites=user_favorites %}
-                                    {% if place.place_id in user_favorites %}
-                                        favoriteButton = `<button class="favorite-button remove" data-place-id="${details.place_id}">Remove from Favorites</button>`;
-                                    {% else %}
-                                        favoriteButton = `<button class="favorite-button add" data-place-id="${details.place_id}" data-name="${details.name || 'Unknown'}" data-address="${details.formatted_address || 'No address available'}" data-rating="${details.rating || ''}">Add to Favorites</button>`;
-                                    {% endif %}
-                                {% endwith %}
-                            {% else %}
-                                favoriteButton = `<p><a href="{% url 'login' %}">Login</a> to save this restaurant to your favorites.</p>`;
-                            {% endif %}
-
-                            const content = `
-                                <div class="info-window">
-                                    <h3>${details.name || 'Unknown'}</h3>
-                                    <p>Address: ${details.formatted_address || 'No address available'}</p>
-                                    <p>Rating: ${details.rating || 'No rating available'}</p>
-                                    <p><strong>Reviews:</strong><br>${details.reviews ? details.reviews.slice(0, 3).map(r => r.text).join('<br><br>') : 'No reviews available'}</p>
-                                    <p><strong>Opening Hours:</strong><br>${details.opening_hours ? details.opening_hours.weekday_text.join('<br>') : 'No hours available'}</p>
-                                    ${favoriteButton}
-                                </div>
-                            `;
+                            if (userFavorites.includes(details.place_id)) {
+                                favoriteButton = '<button class="favorite-button remove" data-place-id="' + details.place_id + '">Remove from Favorites</button>';
+                            } else {
+                                favoriteButton = '<button class="favorite-button add" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
+                            }
+    
+                            const detailUrl = '/restaurant/' + details.place_id + '/';  // Update this path if your URL patterns differ
+    
+                            const content = 
+                                '<div class="info-window">' +
+                                    '<h3>' + (details.name || 'Unknown') + '</h3>' +
+                                    '<p>Address: ' + (details.formatted_address || 'No address available') + '</p>' +
+                                    '<p>Rating: ' + (details.rating || 'No rating available') + '</p>' +
+                                    '<p><a href="' + detailUrl + '">View more details</a></p>' +
+                                    favoriteButton +
+                                '</div>';
                             infoWindow.setContent(content);
                             infoWindow.open(map, marker);
-
+    
                             // Attach event listeners to the favorite buttons
                             attachFavoriteHandlers();
                         } else {
                             console.error("Error fetching restaurant details:", status);
-                            infoWindow.setContent(`<p>Error fetching details for ${place.name}</p>`);
+                            infoWindow.setContent('<p>Error fetching details for ' + place.name + '</p>');
                             infoWindow.open(map, marker);
                         }
                     }
                 );
             });
         }
-
+    
+        // Function to attach event handlers to favorite buttons
         function attachFavoriteHandlers(){
             $('.favorite-button.add').click(function(){
                 const place_id = $(this).data('place-id');
                 const name = $(this).data('name');
                 const address = $(this).data('address');
                 const rating = $(this).data('rating');
-
+    
+                if (!place_id) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Place ID is missing. Cannot add to favorites.',
+                    });
+                    return;
+                }
+    
                 addFavorite(place_id, name, address, rating);
             });
-
+    
             $('.favorite-button.remove').click(function(){
                 const place_id = $(this).data('place-id');
-
+    
+                if (!place_id) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Place ID is missing. Cannot remove from favorites.',
+                    });
+                    return;
+                }
+    
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "Do you want to remove this restaurant from your favorites?",
@@ -202,7 +319,8 @@
                 });
             });
         }
-
+    
+        // Function to add a restaurant to favorites via AJAX
         function addFavorite(place_id, name, address, rating) {
             $.ajax({
                 url: "{% url 'add_favorite' %}",
@@ -215,25 +333,30 @@
                 },
                 success: function(response){
                     Swal.fire({
-                        icon: 'success', 
+                        icon: 'success',
                         title: 'Success',
                         text: response.message,
                         timer: 2000,
-                        showConfirmButton: false 
+                        showConfirmButton: false
                     });
                     infoWindow.close();
+                    // Update the userFavorites array
+                    if (!userFavorites.includes(place_id)) {
+                        userFavorites.push(place_id);
+                    }
                 },
-                error: function(xhr) {
+                error: function(xhr){
                     const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
                         text: errorMsg,
                     });
-                }        
+                }
             });
         }
-
+    
+        // Function to remove a restaurant from favorites via AJAX
         function removeFavorite(place_id) {
             $.ajax({
                 url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
@@ -247,6 +370,11 @@
                         showConfirmButton: false
                     });
                     infoWindow.close();
+                    // Remove the place_id from userFavorites array
+                    const index = userFavorites.indexOf(place_id);
+                    if (index > -1) {
+                        userFavorites.splice(index, 1);
+                    }
                 },
                 error: function(xhr){
                     const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
@@ -258,6 +386,21 @@
                 }
             });
         }
+    
+        // Handle Search Button Click
+        $(document).ready(function(){
+            $('#search-button').click(function(){
+                handleSearchButtonClick();
+            });
+    
+            // Allow pressing Enter to trigger search
+            $('.search-container input, .search-container select').keypress(function(e){
+                if(e.which == 13){ // Enter key
+                    e.preventDefault();
+                    handleSearchButtonClick();
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -267,6 +410,31 @@
     {% else %}
         <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
     {% endif %}
+
+    <!-- Search and Filter Form -->
+    <div class="search-container">
+        <input type="text" id="search-name" placeholder="Search by name">
+        <input type="text" id="search-cuisine" placeholder="Search by cuisine type">
+        <input type="text" id="search-location" placeholder="Search by location">
+        <select id="filter-rating">
+            <option value="">Filter by rating</option>
+            <option value="1">1 star & up</option>
+            <option value="2">2 stars & up</option>
+            <option value="3">3 stars & up</option>
+            <option value="4">4 stars & up</option>
+            <option value="5">5 stars</option>
+        </select>
+        <select id="filter-distance">
+            <option value="">Filter by distance</option>
+            <option value="1000">1 km & up</option>
+            <option value="2000">2 km & up</option>
+            <option value="5000">5 km & up</option>
+            <option value="10000">10 km & up</option>
+        </select>
+        <button id="search-button">Search</button>
+    </div>
+
+    <!-- Map Container -->
     <div id="map"></div>
 </body>
 </html>

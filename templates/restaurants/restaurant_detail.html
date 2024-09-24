@@ -1,10 +1,12 @@
-<!-- restaurant_detail.html -->
+<!-- templates/restaurants/restaurant_detail.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>{{ details.name|default:"Unknown" }} - Atlanta Food Finder</title>
     <!-- Include SweetAlert for enhanced notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Include Google Maps JavaScript API with callback -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,11 +55,42 @@
             color: #777;
             font-size: 0.9em;
         }
+        /* Map container */
+        #map {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
     </style>
     <!-- Include jQuery for AJAX functionality -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // CSRF Token Setup
+        // Initialize Google Map
+        function initMap() {
+            const restaurantLocation = { lat: parseFloat('{{ latitude }}'), lng: parseFloat('{{ longitude }}') };
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: restaurantLocation,
+                zoom: 15
+            });
+
+            const marker = new google.maps.Marker({
+                position: restaurantLocation,
+                map: map,
+                title: '{{ details.name|default:"Unknown" }}'
+            });
+
+            // Optional: Add InfoWindow with Directions Link
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<p><strong>{{ details.name|default:"Unknown" }}</strong><br>' +
+                         '<a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank">Get Directions</a></p>'
+            });
+
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+        }
+
+        // CSRF Token Setup for AJAX
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -73,7 +106,6 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
-
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
@@ -81,20 +113,16 @@
                 }
             }
         });
-
         $(document).ready(function(){
             $('#add-favorite').click(function(){
                 const place_id = $(this).data('place-id');
                 const name = $(this).data('name');
                 const address = $(this).data('address');
                 const rating = $(this).data('rating');
-
                 addFavorite(place_id, name, address, rating);
             });
-
             $('#remove-favorite').click(function(){
                 const place_id = $(this).data('place-id');
-
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "Do you want to remove this restaurant from your favorites?",
@@ -110,8 +138,15 @@
                 });
             });
         });
-
         function addFavorite(place_id, name, address, rating) {
+            if (!place_id) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Place ID is missing. Cannot add to favorites.',
+                });
+                return;
+            }
             $.ajax({
                 url: "{% url 'add_favorite' %}",
                 method: "POST",
@@ -129,7 +164,7 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    location.reload();
+                    location.reload();  // Reload to update favorite status
                 },
                 error: function(xhr){
                     const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
@@ -141,8 +176,15 @@
                 }
             });
         }
-
         function removeFavorite(place_id) {
+            if (!place_id) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Place ID is missing. Cannot remove from favorites.',
+                });
+                return;
+            }
             $.ajax({
                 url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
                 method: "POST",
@@ -154,7 +196,7 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    location.reload();
+                    location.reload();  // Reload to update favorite status
                 },
                 error: function(xhr){
                     const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
@@ -175,13 +217,22 @@
         {% else %}
             <h2>{{ details.name|default:"Unknown" }}</h2>
             <p><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
+            <p><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
+            <p><strong>Cuisine Type:</strong> {{ restaurant.cuisine_type|default:"Unknown" }}</p>
             <p><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
             <p><strong>Opening Hours:</strong></p>
             <ul>
-                {% for day in details.opening_hours.weekday_text %}
-                    <li>{{ day }}</li>
-                {% endfor %}
+                {% if details.opening_hours %}
+                    {% for day in details.opening_hours.weekday_text %}
+                        <li>{{ day }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>No hours available</li>
+                {% endif %}
             </ul>
+            <p><strong>Directions:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank">Get Directions</a></p>
+            <!-- Google Map Showing Restaurant Location -->
+            <div id="map"></div>
             <h3>Reviews:</h3>
             <div class="reviews">
                 {% for review in user_reviews %}

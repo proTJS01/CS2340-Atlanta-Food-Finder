@@ -4,61 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/restaurants/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/restaurants/management/commands/fetch_restaurants.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/logged_out.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/password_reset_complete.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/password_reset_confirm.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/password_reset_done.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/password_reset_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/profile.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/registration/register.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" afterDir="false" />
+    <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="User Story A,C,D,E, and F">
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/atlfoodfinderproject/errorhandling.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/atlfoodfinderproject/google_places_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/atlfoodfinderproject/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/atlfoodfinderproject/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/atlfoodfinderproject/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/project2340/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/project2340/asgi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/project2340/settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/project2340/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340-Atlanta-Food-Finder/project2340/wsgi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340App/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340App/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340App/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340App/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/SignIn.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/SignUp.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signinhelper/AppTheme.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signinhelper/ColorModeSelect.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/TemplateFrame.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/dataDisplay.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/dataDisplay.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/feedback.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/feedback.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/inputs.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/inputs.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/navigation.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/navigation.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/surfaces.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/customizations/surfaces.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/getSignUpTheme.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/getSignUpTheme.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/themePrimitives.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserAuthentication/signuphelper/themePrimitives.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/restaurants/management/commands/fetch_restaurants.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/management/commands/fetch_restaurants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/restaurants/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/restaurants/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/profile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/restaurants/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/map.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,23 +57,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Django Server.CS2340App.executor": "Run",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "django.template.preview.state": "SHOW_EDITOR",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Django Server.CS2340App.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/restaurants" />
@@ -168,8 +125,18 @@
       <workItem from="1727067115219" duration="2594000" />
       <workItem from="1727069719030" duration="2266000" />
       <workItem from="1727112341110" duration="1231000" />
-      <workItem from="1727139337759" duration="9571000" />
+      <workItem from="1727139337759" duration="18004000" />
+      <workItem from="1727206783368" duration="6012000" />
     </task>
+    <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727150534371</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727150534371</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,5 +152,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="User Story A,C,D,E, and F" />
+    <option name="LAST_COMMIT_MESSAGE" value="User Story A,C,D,E, and F" />
   </component>
 </project>

@@ -1,4 +1,4 @@
-# models.py
+# restaurants/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -10,6 +10,7 @@ class Restaurant(models.Model):
     longitude = models.FloatField()
     cuisine_type = models.CharField(max_length=100, default="Unknown")
     place_id = models.CharField(max_length=255, unique=True)  # Enforce uniqueness
+    formatted_phone_number = models.CharField(max_length=20, blank=True, null=True)  # Renamed field
 
     def __str__(self):
         return self.name
