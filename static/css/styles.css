@@ -1,0 +1,132 @@
+/* static/css/styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigation Bar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ff6347;
+    padding: 10px 20px;
+}
+
+.navbar .logo {
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.navbar .nav-links li {
+    display: inline;
+}
+
+.navbar .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Container Styles */
+.container {
+    padding: 20px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #e5533d;
+    transform: scale(1.05);
+}
+
+/* Form Container */
+.form-container {
+    max-width: 500px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+/* Success Message */
+.success-message {
+    color: green;
+    text-align: center;
+}
+
+/* Home Page Background */
+.home-background {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 2px 2px 4px #000;
+    position: relative;
+}
+
+/* Overlay for better text readability */
+.home-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Content within the background */
+.home-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .home-content h1 {
+        font-size: 2em;
+    }
+    .btn {
+        width: 80%;
+        margin: 10px auto;
+        display: block;
+    }
+}
