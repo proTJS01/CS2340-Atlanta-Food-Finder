@@ -61,6 +61,25 @@
             height: 400px;
             margin-top: 20px;
         }
+        /* Google Reviews Styling */
+        .google-reviews {
+            margin-top: 30px;
+        }
+        .google-review {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        .google-review h4 {
+            margin: 0 0 5px 0;
+            color: #ff6347;
+        }
+        .google-review p {
+            margin: 5px 0;
+        }
+        .google-review p em {
+            color: #777;
+            font-size: 0.9em;
+        }
     </style>
     <!-- Include jQuery for AJAX functionality -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -218,7 +237,7 @@
             <h2>{{ details.name|default:"Unknown" }}</h2>
             <p><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
             <p><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
-            <p><strong>Cuisine Type:</strong> {{ restaurant.cuisine_type|default:"Unknown" }}</p>
+            <p><strong>Cuisine Type:</strong> {{ details.cuisine_type|default:"Unknown" }}</p>
             <p><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
             <p><strong>Opening Hours:</strong></p>
             <ul>
@@ -233,7 +252,21 @@
             <p><strong>Directions:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank">Get Directions</a></p>
             <!-- Google Map Showing Restaurant Location -->
             <div id="map"></div>
-            <h3>Reviews:</h3>
+            <h3>Google Reviews:</h3>
+            <div class="google-reviews">
+                {% if google_reviews %}
+                    {% for review in google_reviews %}
+                        <div class="google-review">
+                            <h4>{{ review.author_name }} - Rating: {{ review.rating }}</h4>
+                            <p>{{ review.text }}</p>
+                            <p><em>{{ review.relative_time_description }}</em></p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No Google reviews available.</p>
+                {% endif %}
+            </div>
+            <h3>Your Reviews:</h3>
             <div class="reviews">
                 {% for review in user_reviews %}
                     <div class="review">

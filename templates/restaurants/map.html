@@ -62,7 +62,7 @@
     <script>
         // Inject userFavorites as a JavaScript array
         const userFavorites = {{ user_favorites|safe }};
-    
+
         // CSRF Token Setup
         function getCookie(name) {
             let cookieValue = null;
@@ -79,7 +79,7 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
-    
+
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
@@ -87,25 +87,25 @@
                 }
             }
         });
-    
+
         let map;
         let service;
         let infoWindow;
         let markers = [];
-    
+
         function initMap() {  // Ensure initMap is global
             // Initialize the map centered on Atlanta
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 33.7490, lng: -84.3880 },  // Atlanta coordinates
                 zoom: 12
             });
-    
+
             // Initialize the Places service
             service = new google.maps.places.PlacesService(map);
-    
+
             // Create an InfoWindow for displaying details
             infoWindow = new google.maps.InfoWindow();
-    
+
             // Attempt to get the user's current location
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -127,26 +127,26 @@
                 searchNearbyRestaurants();
             }
         }
-    
+
         // Function to clear existing markers
         function clearMarkers() {
             markers.forEach(marker => marker.setMap(null));
             markers = [];
         }
-    
+
         // Function to search for restaurants
         function searchNearbyRestaurants(location = map.getCenter(), radius = 10000, name = '', cuisine = '', rating = '', distance = '') {
             clearMarkers();
-    
+
             const keyword = (name + ' ' + cuisine).trim();
-    
+
             const request = {
                 location: location,
                 radius: radius.toString(),  // Convert to string as per API requirement
                 type: ['restaurant'],
                 keyword: keyword  // Combine name and cuisine for keyword search
             };
-    
+
             // Perform the nearby search
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -188,7 +188,7 @@
                 }
             });
         }
-    
+
         // Function to handle search button click
         function handleSearchButtonClick() {
             const name = $('#search-name').val().trim();
@@ -196,7 +196,7 @@
             const location = $('#search-location').val().trim();
             const rating = $('#filter-rating').val();
             const distance = $('#filter-distance').val();
-    
+
             // Geocode the location if provided
             if (location) {
                 const geocoder = new google.maps.Geocoder();
@@ -221,7 +221,7 @@
                 searchNearbyRestaurants(currentLocation, radius, name, cuisine, rating, distance);
             }
         }
-    
+
         // Function to add a marker for a restaurant
         function addMarkerForRestaurant(place) {
             const marker = new google.maps.Marker({
@@ -229,9 +229,9 @@
                 position: place.geometry.location,
                 title: place.name
             });
-    
+
             markers.push(marker);
-    
+
             marker.addListener('click', () => {
                 service.getDetails(
                     {
@@ -246,10 +246,10 @@
                             } else {
                                 favoriteButton = '<button class="favorite-button add" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
                             }
-    
+
                             const detailUrl = '/restaurant/' + details.place_id + '/';  // Update this path if your URL patterns differ
-    
-                            const content = 
+
+                            const content =
                                 '<div class="info-window">' +
                                     '<h3>' + (details.name || 'Unknown') + '</h3>' +
                                     '<p>Address: ' + (details.formatted_address || 'No address available') + '</p>' +
@@ -259,7 +259,7 @@
                                 '</div>';
                             infoWindow.setContent(content);
                             infoWindow.open(map, marker);
-    
+
                             // Attach event listeners to the favorite buttons
                             attachFavoriteHandlers();
                         } else {
@@ -271,7 +271,7 @@
                 );
             });
         }
-    
+
         // Function to attach event handlers to favorite buttons
         function attachFavoriteHandlers(){
             $('.favorite-button.add').click(function(){
@@ -279,7 +279,7 @@
                 const name = $(this).data('name');
                 const address = $(this).data('address');
                 const rating = $(this).data('rating');
-    
+
                 if (!place_id) {
                     Swal.fire({
                         icon: 'error',
@@ -288,13 +288,13 @@
                     });
                     return;
                 }
-    
+
                 addFavorite(place_id, name, address, rating);
             });
-    
+
             $('.favorite-button.remove').click(function(){
                 const place_id = $(this).data('place-id');
-    
+
                 if (!place_id) {
                     Swal.fire({
                         icon: 'error',
@@ -303,7 +303,7 @@
                     });
                     return;
                 }
-    
+
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "Do you want to remove this restaurant from your favorites?",
@@ -319,7 +319,7 @@
                 });
             });
         }
-    
+
         // Function to add a restaurant to favorites via AJAX
         function addFavorite(place_id, name, address, rating) {
             $.ajax({
@@ -355,7 +355,7 @@
                 }
             });
         }
-    
+
         // Function to remove a restaurant from favorites via AJAX
         function removeFavorite(place_id) {
             $.ajax({
@@ -386,13 +386,13 @@
                 }
             });
         }
-    
+
         // Handle Search Button Click
         $(document).ready(function(){
             $('#search-button').click(function(){
                 handleSearchButtonClick();
             });
-    
+
             // Allow pressing Enter to trigger search
             $('.search-container input, .search-container select').keypress(function(e){
                 if(e.which == 13){ // Enter key

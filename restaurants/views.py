@@ -13,6 +13,35 @@ logger = logging.getLogger(__name__)
 
 API_KEY = settings.GOOGLE_MAPS_API_KEY  # Use API key from Django settings
 
+# Define specific cuisine types as per Google Places API
+SPECIFIC_CUISINE_TYPES = [
+    'italian_restaurant', 'mexican_restaurant', 'chinese_restaurant',
+    'japanese_restaurant', 'indian_restaurant', 'thai_restaurant',
+    'french_restaurant', 'greek_restaurant', 'spanish_restaurant',
+    'american_restaurant', 'korean_restaurant', 'vietnamese_restaurant',
+    'mediterranean_restaurant', 'turkish_restaurant', 'lebanese_restaurant',
+    'cuban_restaurant', 'thai_restaurant', 'peruvian_restaurant',
+    'brazilian_restaurant', 'caribbean_restaurant', 'german_restaurant',
+    'british_restaurant', 'irish_restaurant', 'portuguese_restaurant',
+    'russian_restaurant', 'scandinavian_restaurant', 'polish_restaurant',
+    'cajun_restaurant', 'creole_restaurant', 'southern_restaurant',
+    # Add more as needed
+]
+
+# Known cuisines for fallback inference
+KNOWN_CUISINES = [
+    'Italian', 'Mexican', 'Chinese', 'Japanese', 'Indian', 'Thai',
+    'French', 'Greek', 'Spanish', 'American', 'Korean', 'Vietnamese',
+    'Mediterranean', 'Turkish', 'Lebanese', 'Cuban', 'Peruvian',
+    'Brazilian', 'Caribbean', 'German', 'British', 'Irish',
+    'Portuguese', 'Russian', 'Scandinavian', 'Polish', 'Cajun',
+    'Creole', 'Southern', 'Ethiopian', 'Moroccan', 'Brazilian',
+    'Argentinian', 'Canadian', 'Belgian', 'Dutch', 'Swiss',
+    'Austrian', 'Hungarian', 'Czech', 'Slovak', 'Ukrainian',
+    'Filipino', 'Malaysian', 'Singaporean', 'Indonesian',
+    'Singaporean', 'Bangladeshi', 'Pakistani', 'Nepalese',
+    # Add more as needed
+]
 
 # Registration View
 def register(request):
@@ -21,7 +50,10 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # Automatically log in the user after registration
+            logger.info(f"New user registered: {user.username}")
             return redirect('profile')  # Redirect to profile or home page
+        else:
+            logger.warning(f"Registration failed: {form.errors}")
     else:
         form = RegisterForm()
     return render(request, 'registration/register.html', {'form': form})
@@ -72,11 +104,19 @@ def add_favorite(request):
 
                 # Extract cuisine type from types
                 cuisine_type = "Unknown"
-                cuisine_keywords = ['restaurant', 'cafe', 'bar', 'bistro', 'diner', 'eatery', 'pub']
                 for t in types:
-                    if t not in cuisine_keywords:
-                        cuisine_type = t.replace('_', ' ').title()
+                    if t in SPECIFIC_CUISINE_TYPES:
+                        cuisine_type = t.replace('_restaurant', '').title()
                         break
+
+                # Fallback: Infer from name
+                if cuisine_type == "Unknown":
+                    for cuisine in KNOWN_CUISINES:
+                        if cuisine.lower() in name.lower():
+                            cuisine_type = cuisine
+                            break
+
+                logger.debug(f"Extracted cuisine_type: {cuisine_type} for place_id: {place_id}")
             else:
                 logger.error(
                     f"Google Places API error for place_id={place_id}: "
@@ -123,6 +163,7 @@ def add_favorite(request):
                 updated = True
             if updated:
                 restaurant.save()
+                logger.debug(f"Updated Restaurant object: {restaurant}")
 
         # Check if the favorite already exists for the user
         favorite, created = Favorite.objects.get_or_create(
@@ -172,57 +213,73 @@ def map_view(request):
     return render(request, 'restaurants/map.html', context)
 
 
-# Fetch detailed restaurant information via Google Places API
+# Restaurant Detail View
 def restaurant_detail(request, place_id):
     # Attempt to retrieve the Restaurant object from the database
     restaurant = Restaurant.objects.filter(place_id=place_id).first()
     if not restaurant:
         # Attempt to fetch restaurant details from Google Places API
-        url = (
-            f"https://maps.googleapis.com/maps/api/place/details/json?"
-            f"place_id={place_id}&"
-            f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours&"
-            f"key={API_KEY}"
-        )
-        response = requests.get(url)
-        data = response.json()
-        if data.get('status') == 'OK':
-            details = data.get('result', {})
-            geometry = details.get('geometry', {})
-            location = geometry.get('location', {})
-            latitude = location.get('lat', 0.0)
-            longitude = location.get('lng', 0.0)
-            name = details.get('name', 'Unknown')
-            address = details.get('formatted_address', 'No address available')
-            formatted_phone_number = details.get('formatted_phone_number', 'No phone number provided')
-            types = details.get('types', [])
-            # Extract cuisine type from types
-            cuisine_type = "Unknown"
-            cuisine_keywords = ['restaurant', 'cafe', 'bar', 'bistro', 'diner', 'eatery', 'pub']
-            for t in types:
-                if t not in cuisine_keywords:
-                    cuisine_type = t.replace('_', ' ').title()
-                    break
-            # Create the Restaurant object
-            restaurant = Restaurant.objects.create(
-                place_id=place_id,
-                name=name,
-                address=address,
-                latitude=latitude,
-                longitude=longitude,
-                cuisine_type=cuisine_type,
-                formatted_phone_number=formatted_phone_number
+        try:
+            url = (
+                f"https://maps.googleapis.com/maps/api/place/details/json?"
+                f"place_id={place_id}&"
+                f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours,reviews&"
+                f"key={API_KEY}"
             )
-            logger.info(f"Created new Restaurant object: {restaurant}")
-        else:
-            logger.error(
-                f"Google Places API error for restaurant_detail: place_id={place_id}, "
-                f"status={data.get('status')}, error_message={data.get('error_message', '')}"
-            )
-            return render(request, 'restaurants/restaurant_detail.html', {
-                'error': 'Details not found.',
-                'error_detail': data.get('error_message', '')
-            })
+            response = requests.get(url)
+            data = response.json()
+            if data.get('status') == 'OK':
+                details = data.get('result', {})
+                geometry = details.get('geometry', {})
+                location = geometry.get('location', {})
+                latitude = location.get('lat', 0.0)
+                longitude = location.get('lng', 0.0)
+                name = details.get('name', 'Unknown')
+                address = details.get('formatted_address', 'No address available')
+                formatted_phone_number = details.get('formatted_phone_number', 'No phone number provided')
+                types = details.get('types', [])
+                reviews = details.get('reviews', [])  # Fetch Google Reviews
+
+                # Extract cuisine type from types
+                cuisine_type = "Unknown"
+                for t in types:
+                    if t in SPECIFIC_CUISINE_TYPES:
+                        cuisine_type = t.replace('_restaurant', '').title()
+                        break
+
+                # Fallback: Infer from name
+                if cuisine_type == "Unknown":
+                    for cuisine in KNOWN_CUISINES:
+                        if cuisine.lower() in name.lower():
+                            cuisine_type = cuisine
+                            break
+
+                logger.debug(f"Extracted cuisine_type: {cuisine_type} for place_id: {place_id}")
+
+                # Create the Restaurant object
+                restaurant = Restaurant.objects.create(
+                    place_id=place_id,
+                    name=name,
+                    address=address,
+                    latitude=latitude,
+                    longitude=longitude,
+                    cuisine_type=cuisine_type,
+                    formatted_phone_number=formatted_phone_number
+                )
+                logger.info(f"Created new Restaurant object: {restaurant}")
+            else:
+                logger.error(
+                    f"Google Places API error for restaurant_detail: place_id={place_id}, "
+                    f"status={data.get('status')}, error_message={data.get('error_message', '')}"
+                )
+                return render(request, 'restaurants/restaurant_detail.html', {
+                    'error': 'Details not found.',
+                    'error_detail': data.get('error_message', '')
+                })
+        except Exception as e:
+            logger.exception(f"Exception in restaurant_detail view for place_id={place_id}: {e}")
+            return render(request, 'restaurants/restaurant_detail.html',
+                          {'error': 'An error occurred while fetching details.', 'error_detail': str(e)})
 
     # At this point, we have the restaurant object
     try:
@@ -230,29 +287,44 @@ def restaurant_detail(request, place_id):
         url = (
             f"https://maps.googleapis.com/maps/api/place/details/json?"
             f"place_id={place_id}&"
-            f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours&"
+            f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours,reviews&"
             f"key={API_KEY}"
         )
         response = requests.get(url)
         data = response.json()
         if data.get('status') == 'OK':
             details = data.get('result', {})
-            # Update Restaurant object with latest details
             types = details.get('types', [])
-            cuisine_type = restaurant.cuisine_type
-            cuisine_keywords = ['restaurant', 'cafe', 'bar', 'bistro', 'diner', 'eatery', 'pub']
+
+            # Extract cuisine type from types
+            updated_cuisine_type = restaurant.cuisine_type
             for t in types:
-                if t not in cuisine_keywords:
-                    new_cuisine_type = t.replace('_', ' ').title()
-                    if new_cuisine_type != cuisine_type:
+                if t in SPECIFIC_CUISINE_TYPES:
+                    new_cuisine_type = t.replace('_restaurant', '').title()
+                    if new_cuisine_type != updated_cuisine_type:
                         restaurant.cuisine_type = new_cuisine_type
-                        restaurant.save()
-                    break
+                        updated_cuisine_type = new_cuisine_type
+                        logger.debug(f"Updated cuisine_type to {new_cuisine_type} for restaurant: {restaurant}")
+                        break
+
+            # Fallback: Infer from name
+            if updated_cuisine_type == "Unknown":
+                for cuisine in KNOWN_CUISINES:
+                    if cuisine.lower() in restaurant.name.lower():
+                        restaurant.cuisine_type = cuisine
+                        updated_cuisine_type = cuisine
+                        logger.debug(f"Inferred cuisine_type to {cuisine} for restaurant: {restaurant}")
+                        break
+
             # Update phone number if changed
             new_phone_number = details.get('formatted_phone_number', restaurant.formatted_phone_number)
             if new_phone_number != restaurant.formatted_phone_number:
                 restaurant.formatted_phone_number = new_phone_number
                 restaurant.save()
+                logger.debug(f"Updated phone number to {new_phone_number} for restaurant: {restaurant}")
+
+            # Fetch Google Reviews
+            google_reviews = details.get('reviews', [])
 
             is_favorite = False
             if request.user.is_authenticated:
@@ -279,6 +351,7 @@ def restaurant_detail(request, place_id):
                 'is_favorite': is_favorite,
                 'form': form,
                 'user_reviews': user_reviews,
+                'google_reviews': google_reviews,  # Pass Google Reviews to the template
                 'latitude': restaurant.latitude,  # Pass latitude
                 'longitude': restaurant.longitude,  # Pass longitude
                 'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,  # Pass API Key
