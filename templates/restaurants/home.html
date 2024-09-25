@@ -1,0 +1,17 @@
+<!-- CS2340App/templates/restaurants/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="text-align: center; margin-top: 100px;">
+        <h1>Atlanta Food Finder</h1>
+        <div style="margin-top: 30px;">
+            {% if user.is_authenticated %}
+                <p>Welcome back, {{ user.username }}!</p>
+                <p><a href="{% url 'map' %}" class="btn">Search Restaurants</a></p>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn" style="margin-right: 10px;">Login</a>
+                <a href="{% url 'register' %}" class="btn" style="background-color: #555;">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

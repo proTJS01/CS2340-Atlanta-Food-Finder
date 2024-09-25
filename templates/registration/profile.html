@@ -1,4 +1,30 @@
-<!-- profile.html -->
+<!-- CS2340App/templates/registration/profile.html -->
+{% extends 'base.html' %}
+
+{% block extra_head %}
+    <!-- Additional head elements if needed -->
+{% endblock %}
+
+{% block content %}
+    <h2>Welcome, {{ user.username }}!</h2>
+    <p>Email: {{ user.email }}</p>
+    <h3>Your Favorite Restaurants:</h3>
+    {% if favorites %}
+        <ul>
+            {% for favorite in favorites %}
+                <li>
+                    <strong>{{ favorite.name }}</strong> - 
+                    <a href="{% url 'restaurant_detail' favorite.place_id %}">View Details</a> | 
+                    <span class="remove-favorite" data-place-id="{{ favorite.place_id }}">Remove</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-favorites">You have no favorite restaurants yet.</p>
+    {% endif %}
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+{% endblock %}
+
 <!DOCTYPE html>
 <html>
 <head>

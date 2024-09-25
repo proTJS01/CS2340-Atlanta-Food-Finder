@@ -20,11 +20,7 @@ SPECIFIC_CUISINE_TYPES = [
     'french_restaurant', 'greek_restaurant', 'spanish_restaurant',
     'american_restaurant', 'korean_restaurant', 'vietnamese_restaurant',
     'mediterranean_restaurant', 'turkish_restaurant', 'lebanese_restaurant',
-    'cuban_restaurant', 'thai_restaurant', 'peruvian_restaurant',
-    'brazilian_restaurant', 'caribbean_restaurant', 'german_restaurant',
-    'british_restaurant', 'irish_restaurant', 'portuguese_restaurant',
-    'russian_restaurant', 'scandinavian_restaurant', 'polish_restaurant',
-    'cajun_restaurant', 'creole_restaurant', 'southern_restaurant',
+    'cuban_restaurant', 'peruvian_restaurant',
     # Add more as needed
 ]
 
@@ -35,13 +31,20 @@ KNOWN_CUISINES = [
     'Mediterranean', 'Turkish', 'Lebanese', 'Cuban', 'Peruvian',
     'Brazilian', 'Caribbean', 'German', 'British', 'Irish',
     'Portuguese', 'Russian', 'Scandinavian', 'Polish', 'Cajun',
-    'Creole', 'Southern', 'Ethiopian', 'Moroccan', 'Brazilian',
-    'Argentinian', 'Canadian', 'Belgian', 'Dutch', 'Swiss',
-    'Austrian', 'Hungarian', 'Czech', 'Slovak', 'Ukrainian',
-    'Filipino', 'Malaysian', 'Singaporean', 'Indonesian',
-    'Singaporean', 'Bangladeshi', 'Pakistani', 'Nepalese',
+    'Creole', 'Southern', 'Ethiopian', 'Moroccan', 'Argentinian',
+    'Canadian', 'Belgian', 'Dutch', 'Swiss', 'Austrian', 'Hungarian',
+    'Czech', 'Slovak', 'Ukrainian', 'Filipino', 'Malaysian',
+    'Singaporean', 'Indonesian', 'Bangladeshi', 'Pakistani', 'Nepalese',
     # Add more as needed
 ]
+
+# Home Page View
+def home(request):
+    """
+    Home page view that greets the user with 'Atlanta Food Finder'
+    and provides Login and Sign Up buttons.
+    """
+    return render(request, 'restaurants/home.html')
 
 # Registration View
 def register(request):
@@ -58,13 +61,11 @@ def register(request):
         form = RegisterForm()
     return render(request, 'registration/register.html', {'form': form})
 
-
 # Profile View with Favorites
 @login_required
 def profile(request):
     favorites = Favorite.objects.filter(user=request.user)
     return render(request, 'registration/profile.html', {'favorites': favorites})
-
 
 # Add Favorite View
 @login_required
@@ -201,6 +202,7 @@ def remove_favorite(request, place_id):
 
 
 # Map View for displaying restaurants
+@login_required
 def map_view(request):
     # Pass user's favorite place_ids to the template for determining favorite status
     user_favorites = []

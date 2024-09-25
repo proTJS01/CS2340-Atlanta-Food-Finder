@@ -1,3 +1,19 @@
+<!-- CS2340App/templates/restaurants/register.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="form-container">
+        <h2>Register</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+        <p style="text-align: center; margin-top: 10px;">Already have an account? <a href="{% url 'login' %}" class="btn">Login here</a>.</p>
+    </div>
+{% endblock %}
+
+
 <!DOCTYPE html>
 <html>
 <head>

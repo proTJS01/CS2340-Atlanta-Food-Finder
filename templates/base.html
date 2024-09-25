@@ -1,0 +1,98 @@
+<!-- CS2340App/templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Atlanta Food Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        /* Navigation Bar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ff6347;
+            padding: 10px 20px;
+        }
+        .navbar .logo {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        .navbar .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+        .navbar .nav-links li {
+            display: inline;
+        }
+        .navbar .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        .navbar .nav-links a:hover,
+        .navbar .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        /* Container Styles */
+        .container {
+            padding: 20px;
+        }
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #e5533d;
+        }
+        /* Form Container */
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+        }
+        /* Error Message */
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+        /* Success Message */
+        .success-message {
+            color: green;
+            text-align: center;
+        }
+    </style>
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">Atlanta Food Finder</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+            <li><a href="{% url 'map' %}" class="{% if request.resolver_match.url_name == 'map' %}active{% endif %}">Restaurant Search</a></li>
+            <li><a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Favorites</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

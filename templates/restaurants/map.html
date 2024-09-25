@@ -1,69 +1,48 @@
-<!-- templates/restaurants/map.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Restaurant Finder</title>
-    <style>
-        /* Ensure the map has a defined height and width */
-        #map {
-            height: 600px;
-            width: 100%;
-        }
-        /* Style the InfoWindow content */
-        .info-window {
-            font-family: Arial, sans-serif;
-            max-width: 300px;
-        }
-        .info-window h3 {
-            margin-top: 0;
-        }
-        .favorite-button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            background-color: #ff6347;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .favorite-button.remove {
-            background-color: #555;
-        }
-        /* Style for the search form */
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .search-container input,
-        .search-container select {
-            padding: 8px;
-            font-size: 16px;
-        }
-        .search-container button {
-            padding: 8px 16px;
-            font-size: 16px;
-            background-color: #ff6347;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .search-container button:hover {
-            background-color: #e5533d;
-        }
-    </style>
+<!-- CS2340App/templates/restaurants/map.html -->
+{% extends 'base.html' %}
+
+{% block extra_head %}
     <!-- Load the Google Maps JavaScript API with Places and Geometry libraries and callback -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
     <!-- Load SweetAlert and jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Restaurant Search</h1>
+    <!-- Search and Filter Form -->
+    <div class="search-container">
+        <input type="text" id="search-name" placeholder="Search by name">
+        <input type="text" id="search-cuisine" placeholder="Search by cuisine type">
+        <input type="text" id="search-location" placeholder="Search by location">
+        <select id="filter-rating">
+            <option value="">Filter by rating</option>
+            <option value="1">1 star & up</option>
+            <option value="2">2 stars & up</option>
+            <option value="3">3 stars & up</option>
+            <option value="4">4 stars & up</option>
+            <option value="5">5 stars</option>
+        </select>
+        <select id="filter-distance">
+            <option value="">Filter by distance</option>
+            <option value="1000">1 km & up</option>
+            <option value="2000">2 km & up</option>
+            <option value="5000">5 km & up</option>
+            <option value="10000">10 km & up</option>
+        </select>
+        <button id="search-button" class="btn">Search</button>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map" style="width: 100%; height: 600px;"></div>
+
+    <!-- JavaScript for Map and Search Functionality -->
     <script>
         // Inject userFavorites as a JavaScript array
         const userFavorites = {{ user_favorites|safe }};
 
-        // CSRF Token Setup
+        // CSRF Token Setup for AJAX
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -242,9 +221,9 @@
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
                             let favoriteButton = '';
                             if (userFavorites.includes(details.place_id)) {
-                                favoriteButton = '<button class="favorite-button remove" data-place-id="' + details.place_id + '">Remove from Favorites</button>';
+                                favoriteButton = '<button class="btn remove favorite-button" data-place-id="' + details.place_id + '">Remove from Favorites</button>';
                             } else {
-                                favoriteButton = '<button class="favorite-button add" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
+                                favoriteButton = '<button class="btn add favorite-button" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
                             }
 
                             const detailUrl = '/restaurant/' + details.place_id + '/';  // Update this path if your URL patterns differ
@@ -254,7 +233,7 @@
                                     '<h3>' + (details.name || 'Unknown') + '</h3>' +
                                     '<p>Address: ' + (details.formatted_address || 'No address available') + '</p>' +
                                     '<p>Rating: ' + (details.rating || 'No rating available') + '</p>' +
-                                    '<p><a href="' + detailUrl + '">View more details</a></p>' +
+                                    '<p><a href="' + detailUrl + '" class="btn" style="background-color: #555;">View more details</a></p>' +
                                     favoriteButton +
                                 '</div>';
                             infoWindow.setContent(content);
@@ -358,6 +337,14 @@
 
         // Function to remove a restaurant from favorites via AJAX
         function removeFavorite(place_id) {
+            if (!place_id) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Place ID is missing. Cannot remove from favorites.',
+                });
+                return;
+            }
             $.ajax({
                 url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
                 method: "POST",
@@ -402,39 +389,4 @@
             });
         });
     </script>
-</head>
-<body>
-    <h1>Restaurant Finder</h1>
-    {% if user.is_authenticated %}
-        <p>Welcome, {{ user.username }}! <a href="{% url 'profile' %}">Profile</a> | <a href="{% url 'logout' %}">Logout</a></p>
-    {% else %}
-        <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
-    {% endif %}
-
-    <!-- Search and Filter Form -->
-    <div class="search-container">
-        <input type="text" id="search-name" placeholder="Search by name">
-        <input type="text" id="search-cuisine" placeholder="Search by cuisine type">
-        <input type="text" id="search-location" placeholder="Search by location">
-        <select id="filter-rating">
-            <option value="">Filter by rating</option>
-            <option value="1">1 star & up</option>
-            <option value="2">2 stars & up</option>
-            <option value="3">3 stars & up</option>
-            <option value="4">4 stars & up</option>
-            <option value="5">5 stars</option>
-        </select>
-        <select id="filter-distance">
-            <option value="">Filter by distance</option>
-            <option value="1000">1 km & up</option>
-            <option value="2000">2 km & up</option>
-            <option value="5000">5 km & up</option>
-            <option value="10000">10 km & up</option>
-        </select>
-        <button id="search-button">Search</button>
-    </div>
-
-    <!-- Map Container -->
-    <div id="map"></div>
-</body>
-</html>
+{% endblock %}
