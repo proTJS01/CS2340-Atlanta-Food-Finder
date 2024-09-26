@@ -1,6 +1,7 @@
 <!-- CS2340App/templates/restaurants/home.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %} <!-- Ensure widget_tweaks is loaded if used in forms -->
 
 {% block container %}
     <div class="container-fluid p-0 flex-grow-1">
@@ -16,7 +17,7 @@
                         {% else %}
                             <div class="d-flex justify-content-center">
                                 <a href="{% url 'login' %}" class="btn btn-primary me-2">Login</a>
-                                <a href="{% url 'register' %}" class="btn btn-secondary">Sign Up</a>
+                                <a href="{% url 'signup' %}" class="btn btn-primary custom-signup-btn">Sign Up</a> <!-- Updated Class -->
                             </div>
                         {% endif %}
                     </div>
@@ -105,6 +106,17 @@
         .btn-danger:hover {
             background-color: #e5533d;
             border-color: #e5533d;
+        }
+
+        /* Custom Sign Up Button */
+        .custom-signup-btn {
+            background-color: #6c757d; /* Example: Bootstrap's secondary color */
+            border-color: #6c757d;
+        }
+
+        .custom-signup-btn:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
         }
 
         /* Responsive Adjustments */

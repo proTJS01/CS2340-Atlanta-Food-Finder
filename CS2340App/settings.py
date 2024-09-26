@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'restaurants',
+    'widget_tweaks',
     'django_google_maps',  # Ensure this app is properly configured
 ]
 
@@ -114,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
@@ -138,5 +139,11 @@ GOOGLE_MAPS_API_KEY = 'AIzaSyCP6CL_9cDOgF4bPxxHWD-o7sg0_BUEhFI'  # Replace with 
 # For development, emails are printed to the console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Redirect to 'profile' page after login
-LOGIN_REDIRECT_URL = 'profile'
+# Redirect to home page after login
+LOGIN_REDIRECT_URL = 'home'
+
+# Redirect to home page after logout
+LOGOUT_REDIRECT_URL = 'home'
+
+# Optionally, specify the login URL if using Django's built-in authentication
+LOGIN_URL = 'login'

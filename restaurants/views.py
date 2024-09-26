@@ -49,28 +49,23 @@ def home(request):
     return render(request, 'restaurants/home.html')
 
 
-# Registration View
-def register(request):
+# Signup View (Renamed from register)
+def signup(request):
+    """
+    User signup view using Django's UserCreationForm.
+    """
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Automatically log in the user after registration
             logger.info(f"New user registered: {user.username}")
-            return redirect('favorites')  # Redirect to favorites page after registration
+            return redirect('home')
         else:
-            logger.warning(f"Registration failed: {form.errors}")
+            logger.warning(f"Signup failed: {form.errors}")
     else:
         form = RegisterForm()
-    return render(request, 'registration/register.html', {'form': form})
-
-
-# Profile View with Favorites
-@login_required
-def profile(request):
-    favorites = Favorite.objects.filter(user=request.user)
-    return render(request, 'registration/profile.html', {'favorites': favorites})
-
+    return render(request, 'registration/signup.html', {'form': form})
 
 # Add Favorite View
 @login_required

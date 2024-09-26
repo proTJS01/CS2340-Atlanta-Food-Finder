@@ -1,11 +1,12 @@
 /* CS2340App/static/css/styles.css */
 
-/* Apply 'Julius Sans One' font to headings and 'Montserrat' to body */
+/* Apply 'Montserrat' font to body */
 body {
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(180deg, #8983A5 0%, #EBB4A2 100%);
 }
 
+/* Apply 'Julius Sans One' font to headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Julius Sans One', sans-serif;
 }
@@ -21,7 +22,7 @@ h1, h2, h3, h4, h5, h6 {
 .search-background-section {
     position: relative;
     height: 25vh; /* 25% of viewport height */
-    background-image: url("../images/searchbackground.png"); /* Correct relative path */
+    background-image: url("../images/searchbackground.png"); /* Updated Path */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -364,4 +365,135 @@ html {
 .badge-rating-1 {
     background-color: #dc3545; /* Red */
     color: #fff;
+}
+
+/* --- New Styles for Login Page --- */
+
+/* Login Page Enhancements */
+.login-container {
+    position: relative;
+    background-image: url("{% static 'images/login_background.jpg' %}"); /* Ensure the image exists in static/images/ */
+    background-size: cover;
+    background-position: center;
+    padding: 60px 0;
+    min-height: 100vh;
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+    z-index: 0;
+}
+
+.login-container > .row {
+    position: relative;
+    z-index: 1;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        background-image: none; /* Remove background image on small screens for better readability */
+        background-color: #f8f9fa; /* Light background */
+    }
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #ff6347; /* Tomato color */
+}
+
+.btn-primary {
+    background-color: #ff6347;
+    border-color: #ff6347;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e5533d;
+    border-color: #e5533d;
+}
+
+.form-control {
+    border-radius: 25px;
+    box-shadow: none;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.text-primary a {
+    color: #ff6347;
+    text-decoration: none;
+}
+
+.text-primary a:hover {
+    color: #e5533d;
+    text-decoration: underline;
+}
+
+/* Additional Enhancements */
+.alert {
+    border-radius: 5px;
+}
+
+/* Icons within Input Groups */
+.input-group-text {
+    background-color: #ff6347;
+    border: none;
+    color: white;
+}
+
+/* Fade-In Animation for Cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 1s ease-out;
+}
+
+/* Rounded Corners for Buttons */
+.btn-primary {
+    border-radius: 25px;
+    padding: 10px 20px;
+}
+
+.btn-outline-danger {
+    border-radius: 25px;
+    padding: 10px 20px;
+}
+
+/* Responsive Adjustments for Buttons */
+@media (max-width: 768px) {
+    .btn-primary,
+    .btn-outline-danger {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
 }
