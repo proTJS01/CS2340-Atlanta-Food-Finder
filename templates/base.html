@@ -81,11 +81,13 @@
     </nav>
     
     <!-- Main Content Area -->
-    <div class="container my-4 flex-grow-1">
-        {% block content %}
-        <!-- Content from other templates will be injected here -->
-        {% endblock %}
-    </div>
+    {% block container %}
+        <div class="container my-4 flex-grow-1">
+            {% block content %}
+            <!-- Content from other templates will be injected here -->
+            {% endblock %}
+        </div>
+    {% endblock %}
     
     <!-- Footer -->
     <footer class="bg-light text-center text-lg-start mt-auto">

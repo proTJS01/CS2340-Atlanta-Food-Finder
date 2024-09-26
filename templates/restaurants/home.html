@@ -2,6 +2,30 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block container %}
+    <div class="container-fluid p-0 flex-grow-1">
+        {% block content %}
+            <div class="home-background">
+                <div class="home-overlay"></div>
+                <div class="home-content">
+                    <h1 id="app-title">Atlanta Food Finder</h1>
+                    <div class="buttons-container mt-4">
+                        {% if user.is_authenticated %}
+                            <p>Welcome back, {{ user.username }}!</p>
+                            <p><a href="{% url 'map' %}" class="btn btn-primary">Search Restaurants</a></p>
+                        {% else %}
+                            <div class="d-flex justify-content-center">
+                                <a href="{% url 'login' %}" class="btn btn-primary me-2">Login</a>
+                                <a href="{% url 'register' %}" class="btn btn-secondary">Sign Up</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
 {% block extra_head %}
     <style>
         /* Home Page Background */
@@ -10,7 +34,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            height: calc(100vh - 56px); /* Full viewport height minus navbar height */
+            min-height: 100vh; /* Ensure it covers the entire viewport height */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -34,35 +58,29 @@
             z-index: 2;
             text-align: center;
             color: white;
-        }
-
-        /* "Atlanta Food Finder" Text Styles */
-        .home-content {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%;
             width: 100%;
-}
+        }
 
+        /* "Atlanta Food Finder" Text Styles */
         #app-title {
             font-family: 'Julius Sans One', sans-serif;
             font-weight: 400;
             font-size: 64px;
             line-height: 69.82px;
             text-align: center;
-    /* Additional styles as needed */
-}
+            /* Removed fixed width and margins for better responsiveness */
+            margin: 0;
+            padding: 0;
+        }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             #app-title {
-                width: 100%;
-                margin-left: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-            }
-            .home-content h1 {
                 font-size: 2em;
             }
             .btn {
@@ -72,22 +90,4 @@
             }
         }
     </style>
-{% endblock %}
-
-{% block content %}
-    <div class="home-background">
-        <div class="home-overlay"></div>
-        <div class="home-content">
-            <h1 id="app-title">Atlanta Food Finder</h1>
-            <div style="margin-top: 30px;">
-                {% if user.is_authenticated %}
-                    <p>Welcome back, {{ user.username }}!</p>
-                    <p><a href="{% url 'map' %}" class="btn">Search Restaurants</a></p>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn" style="margin-right: 10px;">Login</a>
-                    <a href="{% url 'register' %}" class="btn" style="background-color: #555;">Sign Up</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
 {% endblock %}

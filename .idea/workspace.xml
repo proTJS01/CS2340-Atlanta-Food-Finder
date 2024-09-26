@@ -5,16 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="Final User Story A,C,D,E, and F">
-      <change afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/js/scripts.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340App/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340App/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340App/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340App/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/password_reset_confirm.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/password_reset_confirm.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/password_reset_done.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/password_reset_done.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/password_reset_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/password_reset_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration/register.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/restaurants/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/restaurants/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/map.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +129,7 @@
       <workItem from="1727139337759" duration="18004000" />
       <workItem from="1727206783368" duration="8524000" />
       <workItem from="1727288607223" duration="2968000" />
-      <workItem from="1727291609865" duration="11512000" />
+      <workItem from="1727291609865" duration="15313000" />
     </task>
     <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
       <option name="closed" value="true" />
@@ -164,7 +163,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727302172014</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727306341628</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727306341628</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
