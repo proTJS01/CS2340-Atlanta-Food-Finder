@@ -1,4 +1,3 @@
-<!-- CS2340App/templates/restaurants/restaurant_detail.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}  {# Load widget_tweaks library #}
@@ -20,6 +19,17 @@
             {{ error }}
         </div>
     {% else %}
+        <!-- Header Section with Background Image -->
+        <div class="mb-4">
+            <div class="position-relative">
+                <!-- Replace 'restaurant_header.jpg' with your desired header image -->
+                <img src="{% static 'images/restaurant_header.jpg' %}" alt="Restaurant Header" class="img-fluid w-100 rounded" style="height: 300px; object-fit: cover;">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white" style="background-color: rgba(0, 0, 0, 0.4); border-radius: 0.25rem;">
+                    <h1 class="display-4">{{ details.name|default:"Unknown" }}</h1>
+                </div>
+            </div>
+        </div>
+        
         <!-- Main Details Section -->
         <div class="row">
             <!-- Left Column: Details and Reviews -->
@@ -30,7 +40,15 @@
                         <h3 class="card-title">Restaurant Information</h3>
                         <p><i class="fas fa-map-marker-alt me-2 text-danger"></i><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
                         <p><i class="fas fa-phone me-2 text-danger"></i><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
-                        <p><i class="fas fa-utensils me-2 text-danger"></i><strong>Cuisine Type:</strong> {{ details.cuisine_type|default:"Unknown" }}</p>
+                        <p><i class="fas fa-utensils me-2 text-danger"></i><strong>Types:</strong> 
+                            {% if details.types %}
+                                {% for type in details.types %}
+                                    {{ type|title }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </p>
                         <p><i class="fas fa-star me-2 text-warning"></i><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
                         <p><i class="fas fa-clock me-2 text-danger"></i><strong>Opening Hours:</strong></p>
                         <ul class="list-unstyled">
@@ -178,11 +196,11 @@
                     <div class="card-body text-center">
                         {% if user.is_authenticated %}
                             {% if is_favorite %}
-                                <button id="remove-favorite" class="btn btn-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}">
+                                <button class="btn btn-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-action="remove">
                                     <i class="fas fa-heart-broken me-2"></i> Remove from Favorites
                                 </button>
                             {% else %}
-                                <button id="add-favorite" class="btn btn-outline-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">
+                                <button class="btn btn-outline-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-action="add" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">
                                     <i class="fas fa-heart me-2"></i> Add to Favorites
                                 </button>
                             {% endif %}
@@ -269,32 +287,35 @@
     });
 
     $(document).ready(function(){
-        $('#add-favorite').click(function(){
+        // Event Delegation for Favorite Buttons
+        $(document).on('click', '.favorite-button', function(){
             const place_id = $(this).data('place-id');
-            const name = $(this).data('name');
-            const address = $(this).data('address');
-            const rating = $(this).data('rating');
-            addFavorite(place_id, name, address, rating);
-        });
-        $('#remove-favorite').click(function(){
-            const place_id = $(this).data('place-id');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to remove this restaurant from your favorites?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ff6347',
-                cancelButtonColor: '#aaa',
-                confirmButtonText: 'Yes, remove it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    removeFavorite(place_id);
-                }
-            });
+            const action = $(this).data('action');
+
+            if (action === 'add') {
+                const name = $(this).data('name');
+                const address = $(this).data('address');
+                const rating = $(this).data('rating');
+                addFavorite(place_id, name, address, rating, $(this));
+            } else if (action === 'remove') {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to remove this restaurant from your favorites?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ff6347',
+                    cancelButtonColor: '#aaa',
+                    confirmButtonText: 'Yes, remove it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        removeFavorite(place_id, $(this));
+                    }
+                });
+            }
         });
     });
 
-    function addFavorite(place_id, name, address, rating) {
+    function addFavorite(place_id, name, address, rating, buttonElement) {
         if (!place_id) {
             Swal.fire({
                 icon: 'error',
@@ -320,27 +341,14 @@
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
-                    // Update the favorite button to "Remove from Favorites"
-                    $('#add-favorite').removeClass('btn-outline-danger').addClass('btn-danger');
-                    $('#add-favorite').html('<i class="fas fa-heart-broken me-2"></i> Remove from Favorites');
-                    $('#add-favorite').attr('id', 'remove-favorite');
-                    // Re-bind the click event
-                    $('#remove-favorite').click(function(){
-                        const place_id = $(this).data('place-id');
-                        Swal.fire({
-                            title: 'Are you sure?',
-                            text: "Do you want to remove this restaurant from your favorites?",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#ff6347',
-                            cancelButtonColor: '#aaa',
-                            confirmButtonText: 'Yes, remove it!'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                removeFavorite(place_id);
-                            }
-                        });
-                    });
+                    // Update the userFavorites array
+                    if (!userFavorites.includes(place_id)) {
+                        userFavorites.push(place_id);
+                    }
+                    // Update the button to "Remove from Favorites"
+                    buttonElement.removeClass('btn-outline-danger').addClass('btn-danger');
+                    buttonElement.html('<i class="fas fa-heart-broken me-2"></i> Remove from Favorites');
+                    buttonElement.data('action', 'remove');
                 });
             },
             error: function(xhr){
@@ -354,7 +362,7 @@
         });
     }
 
-    function removeFavorite(place_id) {
+    function removeFavorite(place_id, buttonElement) {
         if (!place_id) {
             Swal.fire({
                 icon: 'error',
@@ -374,18 +382,15 @@
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
-                    // Update the favorite button to "Add to Favorites"
-                    $('#remove-favorite').removeClass('btn-danger').addClass('btn-outline-danger');
-                    $('#remove-favorite').html('<i class="fas fa-heart me-2"></i> Add to Favorites');
-                    $('#remove-favorite').attr('id', 'add-favorite');
-                    // Re-bind the click event
-                    $('#add-favorite').click(function(){
-                        const place_id = $(this).data('place-id');
-                        const name = $(this).data('name');
-                        const address = $(this).data('address');
-                        const rating = $(this).data('rating');
-                        addFavorite(place_id, name, address, rating);
-                    });
+                    // Remove the place_id from userFavorites array
+                    const index = userFavorites.indexOf(place_id);
+                    if (index > -1) {
+                        userFavorites.splice(index, 1);
+                    }
+                    // Update the button to "Add to Favorites"
+                    buttonElement.removeClass('btn-danger').addClass('btn-outline-danger');
+                    buttonElement.html('<i class="fas fa-heart me-2"></i> Add to Favorites');
+                    buttonElement.data('action', 'add');
                 });
             },
             error: function(xhr){

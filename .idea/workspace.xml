@@ -7,8 +7,7 @@
     <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="Final User Story A,C,D,E, and F">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/restaurants/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/restaurants/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/restaurants/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/restaurants/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/map.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" afterDir="false" />
     </list>
@@ -129,7 +128,7 @@
       <workItem from="1727206783368" duration="8524000" />
       <workItem from="1727288607223" duration="2968000" />
       <workItem from="1727291609865" duration="33154000" />
-      <workItem from="1727366182392" duration="3758000" />
+      <workItem from="1727366182392" duration="9064000" />
     </task>
     <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
       <option name="closed" value="true" />
@@ -235,7 +234,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727342121467</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727370064232</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1727370064233</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -257,5 +264,16 @@
     <MESSAGE value="Updated User Story A,C,D,E, and F" />
     <MESSAGE value="Final User Story A,C,D,E, and F" />
     <option name="LAST_COMMIT_MESSAGE" value="Final User Story A,C,D,E, and F" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/templates/restaurants/restaurant_detail.html</url>
+          <line>42</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
