@@ -1,5 +1,6 @@
 <!-- CS2340App/templates/restaurants/restaurant_detail.html -->
 {% extends 'base.html' %}
+{% load static %} {# Enables the use of static tags #}
 
 {% block extra_head %}
     <!-- Include Google Maps JavaScript API with callback -->
@@ -10,229 +11,318 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        {% if error %}
-            <p>{{ error }}</p>
-        {% else %}
-            <h2>{{ details.name|default:"Unknown" }}</h2>
-            <p><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
-            <p><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
-            <p><strong>Cuisine Type:</strong> {{ details.cuisine_type|default:"Unknown" }}</p>
-            <p><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
-            <p><strong>Opening Hours:</strong></p>
-            <ul>
-                {% if details.opening_hours %}
-                    {% for day in details.opening_hours.weekday_text %}
-                        <li>{{ day }}</li>
-                    {% endfor %}
-                {% else %}
-                    <li>No hours available</li>
-                {% endif %}
-            </ul>
-            <p><strong>Directions:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank" class="btn">Get Directions</a></p>
-            <!-- Google Map Showing Restaurant Location -->
-            <div id="map" style="width: 100%; height: 400px; margin-top: 20px;"></div>
-            
-            <!-- Google Reviews -->
-            <h3>Google Reviews:</h3>
-            <div class="google-reviews">
-                {% if google_reviews %}
-                    {% for review in google_reviews %}
-                        <div class="google-review">
-                            <h4>{{ review.author_name }} - Rating: {{ review.rating }}</h4>
-                            <p>{{ review.text }}</p>
-                            <p><em>{{ review.relative_time_description }}</em></p>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>No Google reviews available.</p>
-                {% endif %}
+<div class="container my-5">
+    {% if error %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error }}
+        </div>
+    {% else %}
+        <!-- Header Section with Background Image -->
+        <div class="mb-4">
+            <div class="position-relative">
+                <!-- Replace 'restaurant_header.jpg' with your desired header image -->
+                <img src="{% static 'images/restaurant_header.jpg' %}" alt="Restaurant Header" class="img-fluid w-100 rounded" style="height: 300px; object-fit: cover;">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white" style="background-color: rgba(0, 0, 0, 0.4); border-radius: 0.25rem;">
+                    <h1 class="display-4">{{ details.name|default:"Unknown" }}</h1>
+                </div>
             </div>
+        </div>
 
-            <!-- User Reviews -->
-            <h3>Your Reviews:</h3>
-            <div class="reviews">
-                {% for review in user_reviews %}
-                    <div class="review">
-                        <h4>{{ review.user.username }} - Rating: {{ review.rating }}</h4>
-                        <p>{{ review.comment }}</p>
-                        <p><em>Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</em></p>
+        <!-- Main Details Section -->
+        <div class="row">
+            <!-- Left Column: Details and Reviews -->
+            <div class="col-lg-8 col-md-7 mb-4">
+                <!-- Restaurant Information -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">Restaurant Information</h3>
+                        <p><i class="fas fa-map-marker-alt me-2 text-danger"></i><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
+                        <p><i class="fas fa-phone me-2 text-danger"></i><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
+                        <p><i class="fas fa-utensils me-2 text-danger"></i><strong>Cuisine Type:</strong> {{ details.cuisine_type|default:"Unknown" }}</p>
+                        <p><i class="fas fa-star me-2 text-warning"></i><strong>Rating:</strong> {{ details.rating|default:"No rating available" }}</p>
+                        <p><i class="fas fa-clock me-2 text-danger"></i><strong>Opening Hours:</strong></p>
+                        <ul class="list-unstyled">
+                            {% if details.opening_hours %}
+                                {% for day in details.opening_hours.weekday_text %}
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>{{ day }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No hours available</li>
+                            {% endif %}
+                        </ul>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank" class="btn btn-primary mt-3">
+                            <i class="fas fa-directions me-2"></i> Get Directions
+                        </a>
                     </div>
-                {% empty %}
-                    <p>No reviews yet. Be the first to review!</p>
-                {% endfor %}
+                </div>
+
+                <!-- Google Map Section -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">Location</h3>
+                        <div id="map" class="rounded" style="width: 100%; height: 400px;"></div>
+                    </div>
+                </div>
+
+                <!-- Google Reviews Section -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">Google Reviews</h3>
+                        {% if google_reviews %}
+                            {% for review in google_reviews %}
+                                <div class="mb-3">
+                                    <h5><i class="fas fa-user me-2 text-primary"></i>{{ review.author_name }} <span class="badge bg-warning text-dark">{{ review.rating }}</span></h5>
+                                    <p>{{ review.text }}</p>
+                                    <small class="text-muted">{{ review.relative_time_description }}</small>
+                                </div>
+                                <hr>
+                            {% endfor %}
+                        {% else %}
+                            <p>No Google reviews available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- User Reviews Section -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">Your Reviews</h3>
+                        {% for review in user_reviews %}
+                            <div class="mb-3">
+                                <h5><i class="fas fa-user-circle me-2 text-primary"></i>{{ review.user.username }} <span class="badge bg-warning text-dark">{{ review.rating }}</span></h5>
+                                <p>{{ review.comment }}</p>
+                                <small class="text-muted">Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</small>
+                            </div>
+                            <hr>
+                        {% empty %}
+                            <p>No reviews yet. Be the first to review!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Review Submission Form -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">Write a Review</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ form.rating.label_tag }}
+                                {{ form.rating }}
+                                {% if form.rating.errors %}
+                                    <div class="text-danger">{{ form.rating.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.comment.label_tag }}
+                                {{ form.comment }}
+                                {% if form.comment.errors %}
+                                    <div class="text-danger">{{ form.comment.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane me-2"></i>Submit Review</button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <!-- Review Submission Form -->
-            <h3>Write a Review:</h3>
-            <div class="review-form">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn">Submit Review</button>
-                </form>
+            <!-- Right Column: Favorite Button and Additional Info -->
+            <div class="col-lg-4 col-md-5">
+                <!-- Favorite Button Card -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body text-center">
+                        {% if user.is_authenticated %}
+                            {% if is_favorite %}
+                                <button id="remove-favorite" class="btn btn-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}">
+                                    <i class="fas fa-heart-broken me-2"></i> Remove from Favorites
+                                </button>
+                            {% else %}
+                                <button id="add-favorite" class="btn btn-outline-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">
+                                    <i class="fas fa-heart me-2"></i> Add to Favorites
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <p><a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg"><i class="fas fa-sign-in-alt me-2"></i> Login to Save Favorites</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Additional Information Card -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title"><i class="fas fa-info-circle me-2 text-primary"></i>Additional Information</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-wifi me-2 text-success"></i> Free Wi-Fi</li>
+                            <li><i class="fas fa-smoking-ban me-2 text-success"></i> Non-Smoking</li>
+                            <li><i class="fas fa-utensils me-2 text-success"></i> Family-Friendly</li>
+                            <!-- Add more features as needed -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Back to Map Button -->
+                <div class="d-grid">
+                    <a href="{% url 'map' %}" class="btn btn-secondary btn-lg"><i class="fas fa-map-marked-alt me-2"></i> Back to Map</a>
+                </div>
             </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
 
-            <!-- Favorite Button -->
-            {% if user.is_authenticated %}
-                {% if is_favorite %}
-                    <button id="remove-favorite" class="btn remove favorite-button" data-place-id="{{ details.place_id }}">Remove from Favorites</button>
-                {% else %}
-                    <button id="add-favorite" class="btn add favorite-button" data-place-id="{{ details.place_id }}" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">Add to Favorites</button>
-                {% endif %}
-            {% else %}
-                <p><a href="{% url 'login' %}" class="btn">Login</a> to save this restaurant to your favorites.</p>
-            {% endif %}
-
-            <!-- Back to Map -->
-            <p><a href="{% url 'map' %}" class="btn" style="background-color: #555;">Back to Map</a></p>
-        {% endif %}
-    </div>
-
-    <!-- JavaScript for Map and Favorite Functionality -->
-    <script>
-        // Initialize Google Map
-        function initMap() {
-            const restaurantLocation = { lat: parseFloat('{{ latitude }}'), lng: parseFloat('{{ longitude }}') };
-            const map = new google.maps.Map(document.getElementById('map'), {
-                center: restaurantLocation,
-                zoom: 15
-            });
-
-            const marker = new google.maps.Marker({
-                position: restaurantLocation,
-                map: map,
-                title: '{{ details.name|default:"Unknown" }}'
-            });
-
-            // Optional: Add InfoWindow with Directions Link
-            const infoWindow = new google.maps.InfoWindow({
-                content: '<p><strong>{{ details.name|default:"Unknown" }}</strong><br>' +
-                         '<a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank" class="btn" style="background-color: #555;">Get Directions</a></p>'
-            });
-
-            marker.addListener('click', () => {
-                infoWindow.open(map, marker);
-            });
-        }
-
-        // CSRF Token Setup for AJAX
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        const csrftoken = getCookie('csrftoken');
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
+{% block extra_js %}
+<!-- JavaScript for Map and Favorite Functionality -->
+<script>
+    // Initialize Google Map
+    function initMap() {
+        const restaurantLocation = { lat: parseFloat('{{ latitude }}'), lng: parseFloat('{{ longitude }}') };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: restaurantLocation,
+            zoom: 15
         });
-        $(document).ready(function(){
-            $('#add-favorite').click(function(){
-                const place_id = $(this).data('place-id');
-                const name = $(this).data('name');
-                const address = $(this).data('address');
-                const rating = $(this).data('rating');
-                addFavorite(place_id, name, address, rating);
+
+        const marker = new google.maps.Marker({
+            position: restaurantLocation,
+            map: map,
+            title: '{{ details.name|default:"Unknown" }}'
+        });
+
+        // Optional: Add InfoWindow with Directions Link
+        const infoWindow = new google.maps.InfoWindow({
+            content: '<p><strong>{{ details.name|default:"Unknown" }}</strong><br>' +
+                     '<a href="https://www.google.com/maps/dir/?api=1&destination={{ latitude }},{{ longitude }}" target="_blank" class="btn btn-primary">Get Directions</a></p>'
+        });
+
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
+    }
+
+    // CSRF Token Setup for AJAX
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $(document).ready(function(){
+        $('#add-favorite').click(function(){
+            const place_id = $(this).data('place-id');
+            const name = $(this).data('name');
+            const address = $(this).data('address');
+            const rating = $(this).data('rating');
+            addFavorite(place_id, name, address, rating);
+        });
+        $('#remove-favorite').click(function(){
+            const place_id = $(this).data('place-id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this restaurant from your favorites?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff6347',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeFavorite(place_id);
+                }
             });
-            $('#remove-favorite').click(function(){
-                const place_id = $(this).data('place-id');
+        });
+    });
+
+    function addFavorite(place_id, name, address, rating) {
+        if (!place_id) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Place ID is missing. Cannot add to favorites.',
+            });
+            return;
+        }
+        $.ajax({
+            url: "{% url 'add_favorite' %}",
+            method: "POST",
+            data: {
+                'place_id': place_id,
+                'name': name,
+                'address': address,
+                'rating': rating
+            },
+            success: function(response){
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "Do you want to remove this restaurant from your favorites?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#ff6347',
-                    cancelButtonColor: '#aaa',
-                    confirmButtonText: 'Yes, remove it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        removeFavorite(place_id);
-                    }
+                    icon: 'success',
+                    title: 'Added!',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Optionally, change the button to "Remove from Favorites"
+                    location.reload();  // Reload to update favorite status
                 });
-            });
-        });
-        function addFavorite(place_id, name, address, rating) {
-            if (!place_id) {
+            },
+            error: function(xhr){
+                const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Place ID is missing. Cannot add to favorites.',
+                    text: errorMsg,
                 });
-                return;
             }
-            $.ajax({
-                url: "{% url 'add_favorite' %}",
-                method: "POST",
-                data: {
-                    'place_id': place_id,
-                    'name': name,
-                    'address': address,
-                    'rating': rating
-                },
-                success: function(response){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    location.reload();  // Reload to update favorite status
-                },
-                error: function(xhr){
-                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMsg,
-                    });
-                }
+        });
+    }
+
+    function removeFavorite(place_id) {
+        if (!place_id) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Place ID is missing. Cannot remove from favorites.',
             });
+            return;
         }
-        function removeFavorite(place_id) {
-            if (!place_id) {
+        $.ajax({
+            url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
+            method: "POST",
+            success: function(response){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed!',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Optionally, change the button to "Add to Favorites"
+                    location.reload();  // Reload to update favorite status
+                });
+            },
+            error: function(xhr){
+                const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Place ID is missing. Cannot remove from favorites.',
+                    text: errorMsg,
                 });
-                return;
             }
-            $.ajax({
-                url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
-                method: "POST",
-                success: function(response){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Removed!',
-                        text: response.message,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    location.reload();  // Reload to update favorite status
-                },
-                error: function(xhr){
-                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMsg,
-                    });
-                }
-            });
-        }
-    </script>
+        });
+    }
+</script>
 {% endblock %}

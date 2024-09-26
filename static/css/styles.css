@@ -190,3 +190,152 @@ h1, h2, h3, h4, h5, h6 {
         width: 100%;
     }
 }
+
+/* --- New Styles for Restaurant Details Page --- */
+
+/* Card Styling for Restaurant Details */
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Favorite Button Animations */
+.favorite-button {
+    transition: transform 0.2s;
+}
+
+.favorite-button:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive Adjustments for Restaurant Details */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .card-body p {
+        font-size: 0.95rem;
+    }
+
+    .btn-lg {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Review Cards */
+.google-review, .user-review {
+    border-left: 3px solid #dc3545;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+/* Additional Information List */
+.additional-info li {
+    margin-bottom: 10px;
+}
+
+/* Smooth Scroll for Anchors */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Favorite Image Styling */
+.favorite-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Text Truncation for Uniformity */
+.card-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Ensure the card footer sticks to the bottom */
+.card-body {
+    flex: 1 1 auto;
+}
+
+/* Optional: Enhance button visibility */
+.remove-favorite-btn {
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+}
+
+.remove-favorite-btn:hover {
+    background-color: #c82333;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #ff6347;
+    border-color: #ff6347;
+}
+
+.btn-primary:hover {
+    background-color: #e5533d;
+    border-color: #e5533d;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Review Sections Styling */
+.card-body .mb-3 {
+    border-left: 3px solid #dc3545;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+/* Additional Information List Styling */
+.additional-info li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Carousel Styling (If Implemented) */
+.carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 250px;
+    }
+}
+
+/* Loading Spinner Styling (Optional) */
+#loading-spinner {
+    z-index: 1050; /* Above other elements */
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    padding: 20px;
+}
