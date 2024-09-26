@@ -263,9 +263,25 @@
 
         // Function to handle favorite button clicks using event delegation
         $(document).on('click', '.favorite-button', function(){
+            if (!isAuthenticated) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Login Required',
+                    text: 'You need to be logged in to save favorites.',
+                    confirmButtonText: 'Login',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{% url "login" %}?next=' + encodeURIComponent(window.location.pathname);
+                    }
+                });
+                return;
+            }
+            // Proceed as before
             const place_id = $(this).data('place-id');
             const action = $(this).data('action');
-
+        
             if (action === 'add') {
                 const name = $(this).data('name');
                 const address = $(this).data('address');
@@ -287,6 +303,7 @@
                 });
             }
         });
+
 
         // Function to add a restaurant to favorites via AJAX
         function addFavorite(place_id, name, address, rating, buttonElement) {
