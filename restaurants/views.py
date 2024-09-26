@@ -203,7 +203,6 @@ def remove_favorite(request, place_id):
 
 
 # Map View for displaying restaurants
-@login_required
 def map_view(request):
     # Pass user's favorite place_ids to the template for determining favorite status
     user_favorites = []
@@ -298,7 +297,6 @@ def favorites(request):
 
 
 # Restaurant Detail View
-@login_required
 def restaurant_detail(request, place_id):
     # Attempt to retrieve the Restaurant object from the database
     restaurant = Restaurant.objects.filter(place_id=place_id).first()

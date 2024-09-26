@@ -26,8 +26,8 @@ class Favorite(models.Model):
     rating = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('user', 'place_id')  # Prevent duplicate favorites
+    #class Meta:
+        #unique_together = ('user', 'place_id')  # Prevent duplicate favorites
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"

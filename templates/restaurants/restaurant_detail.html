@@ -1,6 +1,7 @@
 <!-- CS2340App/templates/restaurants/restaurant_detail.html -->
 {% extends 'base.html' %}
-{% load static %} {# Enables the use of static tags #}
+{% load static %}
+{% load widget_tweaks %}  {# Load widget_tweaks library #}
 
 {% block extra_head %}
     <!-- Include Google Maps JavaScript API with callback -->
@@ -8,6 +9,8 @@
     <!-- Include SweetAlert and jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include custom CSS for badge ratings -->
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -17,17 +20,6 @@
             {{ error }}
         </div>
     {% else %}
-        <!-- Header Section with Background Image -->
-        <div class="mb-4">
-            <div class="position-relative">
-                <!-- Replace 'restaurant_header.jpg' with your desired header image -->
-                <img src="{% static 'images/restaurant_header.jpg' %}" alt="Restaurant Header" class="img-fluid w-100 rounded" style="height: 300px; object-fit: cover;">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white" style="background-color: rgba(0, 0, 0, 0.4); border-radius: 0.25rem;">
-                    <h1 class="display-4">{{ details.name|default:"Unknown" }}</h1>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Details Section -->
         <div class="row">
             <!-- Left Column: Details and Reviews -->
@@ -64,7 +56,7 @@
                     </div>
                 </div>
 
-                <!-- Google Reviews Section -->
+                <!-- Google Reviews Section (Visible to All Users) -->
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
                         <h3 class="card-title mb-3">Google Reviews</h3>
@@ -73,18 +65,22 @@
                                 <div class="mb-3">
                                     <h5>
                                         <i class="fas fa-user me-2 text-primary"></i>{{ review.author_name }}
-                                        {% if review.rating == 5 %}
-                                            <span class="badge badge-rating-5">{{ review.rating }}/5</span>
-                                        {% elif review.rating == 4 %}
-                                            <span class="badge badge-rating-4">{{ review.rating }}/5</span>
-                                        {% elif review.rating == 3 %}
-                                            <span class="badge badge-rating-3">{{ review.rating }}/5</span>
-                                        {% elif review.rating == 2 %}
-                                            <span class="badge badge-rating-2">{{ review.rating }}/5</span>
-                                        {% elif review.rating == 1 %}
-                                            <span class="badge badge-rating-1">{{ review.rating }}/5</span>
+                                        {% if review.rating %}
+                                            {% if review.rating == 5 %}
+                                                <span class="badge badge-rating-5">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 4 %}
+                                                <span class="badge badge-rating-4">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 3 %}
+                                                <span class="badge badge-rating-3">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 2 %}
+                                                <span class="badge badge-rating-2">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 1 %}
+                                                <span class="badge badge-rating-1">{{ review.rating }}/5</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ review.rating }}/5</span>
+                                            {% endif %}
                                         {% else %}
-                                            <span class="badge bg-secondary">{{ review.rating }}/5</span>
+                                            <span class="badge bg-secondary">No Rating</span>
                                         {% endif %}
                                     </h5>
                                     <p>{{ review.text }}</p>
@@ -98,62 +94,81 @@
                     </div>
                 </div>
 
-                <!-- User Reviews Section -->
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body">
-                        <h3 class="card-title mb-3">Your Reviews</h3>
-                        {% for review in user_reviews %}
-                            <div class="mb-3">
-                                <h5>
-                                    <i class="fas fa-user-circle me-2 text-primary"></i>{{ review.user.username }}
-                                    {% if review.rating == 5 %}
-                                        <span class="badge badge-rating-5">{{ review.rating }}/5</span>
-                                    {% elif review.rating == 4 %}
-                                        <span class="badge badge-rating-4">{{ review.rating }}/5</span>
-                                    {% elif review.rating == 3 %}
-                                        <span class="badge badge-rating-3">{{ review.rating }}/5</span>
-                                    {% elif review.rating == 2 %}
-                                        <span class="badge badge-rating-2">{{ review.rating }}/5</span>
-                                    {% elif review.rating == 1 %}
-                                        <span class="badge badge-rating-1">{{ review.rating }}/5</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">{{ review.rating }}/5</span>
-                                    {% endif %}
-                                </h5>
-                                <p>{{ review.comment }}</p>
-                                <small class="text-muted">Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</small>
-                            </div>
-                            <hr>
-                        {% empty %}
-                            <p>No reviews yet. Be the first to review!</p>
-                        {% endfor %}
+                <!-- User Reviews Section (Visible to Authenticated Users) -->
+                {% if user.is_authenticated %}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-3">Your Reviews</h3>
+                            {% for review in user_reviews %}
+                                <div class="mb-3">
+                                    <h5>
+                                        <i class="fas fa-user-circle me-2 text-primary"></i>{{ review.user.username }}
+                                        {% if review.rating %}
+                                            {% if review.rating == 5 %}
+                                                <span class="badge badge-rating-5">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 4 %}
+                                                <span class="badge badge-rating-4">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 3 %}
+                                                <span class="badge badge-rating-3">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 2 %}
+                                                <span class="badge badge-rating-2">{{ review.rating }}/5</span>
+                                            {% elif review.rating == 1 %}
+                                                <span class="badge badge-rating-1">{{ review.rating }}/5</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ review.rating }}/5</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">No Rating</span>
+                                        {% endif %}
+                                    </h5>
+                                    <p>{{ review.comment }}</p>
+                                    <small class="text-muted">Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</small>
+                                </div>
+                                <hr>
+                            {% empty %}
+                                <p>No reviews yet. Be the first to review!</p>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
 
-                <!-- Review Submission Form -->
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body">
-                        <h3 class="card-title mb-3">Write a Review</h3>
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                {{ form.rating.label_tag }}
-                                {{ form.rating }}
-                                {% if form.rating.errors %}
-                                    <div class="text-danger">{{ form.rating.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                {{ form.comment.label_tag }}
-                                {{ form.comment }}
-                                {% if form.comment.errors %}
-                                    <div class="text-danger">{{ form.comment.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane me-2"></i>Submit Review</button>
-                        </form>
+                    <!-- Review Submission Form (Visible to Authenticated Users Only) -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-3">Write a Review</h3>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    {{ form.rating.label_tag }}
+                                    <div>
+                                        {% for radio in form.rating %}
+                                            <div class="form-check form-check-inline">
+                                                {{ radio.tag }}
+                                                {{ radio.choice_label }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.rating.errors %}
+                                        <div class="text-danger">{{ form.rating.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.comment.label_tag }}
+                                    {{ form.comment|add_class:"form-control" }}
+                                    {% if form.comment.errors %}
+                                        <div class="text-danger">{{ form.comment.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Review
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <div class="alert alert-info text-center" role="alert">
+                        <p><a href="{% url 'login' %}">Log in</a> to view and submit reviews.</p>
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Right Column: Favorite Button and Additional Info -->
@@ -305,12 +320,31 @@
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
-                    // Optionally, change the button to "Remove from Favorites"
-                    location.reload();  // Reload to update favorite status
+                    // Update the favorite button to "Remove from Favorites"
+                    $('#add-favorite').removeClass('btn-outline-danger').addClass('btn-danger');
+                    $('#add-favorite').html('<i class="fas fa-heart-broken me-2"></i> Remove from Favorites');
+                    $('#add-favorite').attr('id', 'remove-favorite');
+                    // Re-bind the click event
+                    $('#remove-favorite').click(function(){
+                        const place_id = $(this).data('place-id');
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to remove this restaurant from your favorites?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#ff6347',
+                            cancelButtonColor: '#aaa',
+                            confirmButtonText: 'Yes, remove it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                removeFavorite(place_id);
+                            }
+                        });
+                    });
                 });
             },
             error: function(xhr){
-                const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -340,8 +374,18 @@
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
-                    // Optionally, change the button to "Add to Favorites"
-                    location.reload();  // Reload to update favorite status
+                    // Update the favorite button to "Add to Favorites"
+                    $('#remove-favorite').removeClass('btn-danger').addClass('btn-outline-danger');
+                    $('#remove-favorite').html('<i class="fas fa-heart me-2"></i> Add to Favorites');
+                    $('#remove-favorite').attr('id', 'add-favorite');
+                    // Re-bind the click event
+                    $('#add-favorite').click(function(){
+                        const place_id = $(this).data('place-id');
+                        const name = $(this).data('name');
+                        const address = $(this).data('address');
+                        const rating = $(this).data('rating');
+                        addFavorite(place_id, name, address, rating);
+                    });
                 });
             },
             error: function(xhr){

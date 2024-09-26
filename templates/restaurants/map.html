@@ -8,6 +8,10 @@
     <!-- Load SweetAlert and jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Pass user authentication status to JavaScript as a boolean
+        const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -278,6 +282,22 @@
                     return;
                 }
 
+                if (!isAuthenticated) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Login Required',
+                        text: 'You must log in to add favorites.',
+                        showCancelButton: true,
+                        confirmButtonText: 'Login',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{% url 'login' %}";
+                        }
+                    });
+                    return;
+                }
+
                 addFavorite(place_id, name, address, rating);
             });
 
@@ -323,7 +343,7 @@
                 success: function(response){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success',
+                        title: 'Added!',
                         text: response.message,
                         timer: 2000,
                         showConfirmButton: false
@@ -376,7 +396,7 @@
                     });
                 },
                 error: function(xhr){
-                    var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
