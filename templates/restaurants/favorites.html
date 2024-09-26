@@ -1,0 +1,258 @@
+<!-- CS2340App/restaurants/templates/restaurants/favorites.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container favorites-container my-4">
+    <div class="favorites-header text-center mb-4">
+        <h2>Your Favorite Restaurants</h2>
+        <p>Explore and manage your favorite dining spots in Atlanta.</p>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="mb-4">
+        <div class="row g-3">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <input type="text" id="favorite-search" class="form-control" placeholder="Search favorites by name" aria-label="Search favorites by name">
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <input type="text" id="favorite-filter-cuisine" class="form-control" placeholder="Search by cuisine" aria-label="Search by cuisine">
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <select id="favorite-filter-rating" class="form-select" aria-label="Filter by rating">
+                    <option value="">Filter by rating</option>
+                    <option value="5">5 stars</option>
+                    <option value="4">4 stars & up</option>
+                    <option value="3">3 stars & up</option>
+                    <option value="2">2 stars & up</option>
+                    <option value="1">1 star & up</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if favorites %}
+        <div class="row g-4">
+            {% for favorite in favorites %}
+                <div class="favorite-card col-lg-4 col-md-6 col-sm-12" data-cuisine="{{ favorite.cuisine_type|lower }}">
+                    <div class="card h-100 shadow-sm">
+                        {% if favorite.image_url %}
+                            <img src="{{ favorite.image_url }}" alt="{{ favorite.name }}" class="card-img-top favorite-image" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'images/placeholder.png' %}" alt="No Image Available" class="card-img-top favorite-image" loading="lazy">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ favorite.name }}</h5>
+                            <p class="card-text"><i class="fas fa-map-marker-alt"></i> {{ favorite.address }}</p>
+                            <p class="card-text mt-auto">
+                                <i class="fas fa-star text-warning"></i> {{ favorite.rating|default:"N/A" }}
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{% url 'restaurant_detail' favorite.place_id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                            <button class="btn btn-danger btn-sm remove-favorite-btn" data-place-id="{{ favorite.place_id }}">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            You have not added any favorite restaurants yet. Start exploring and add your favorites!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include jQuery and SweetAlert2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    /* Ensure all favorite images have the same height and object-fit for uniformity */
+    .favorite-image {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    /* Limit the number of lines for card titles and text */
+    .card-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Limit to 2 lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Ensure the card footer sticks to the bottom */
+    .card-body {
+        flex: 1 1 auto;
+    }
+
+    /* Optional: Enhance button visibility */
+    .remove-favorite-btn {
+        color: #fff;
+        background-color: #dc3545;
+        border: none;
+    }
+
+    .remove-favorite-btn:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<script>
+    $(document).ready(function(){
+        // CSRF Token Setup for AJAX
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        // Function to filter favorites based on search and filters
+        function filterFavorites(){
+            var searchQuery = $('#favorite-search').val().toLowerCase();
+            var selectedRating = $('#favorite-filter-rating').val();
+            var selectedCuisine = $('#favorite-filter-cuisine').val().toLowerCase();
+
+            $('.favorite-card').each(function(){
+                var cardName = $(this).find('.card-title').text().toLowerCase();
+                var cardRatingText = $(this).find('.card-text .fa-star').parent().text();
+                var cardRatingMatch = cardRatingText.match(/(\d+(\.\d+)?)/);
+                var cardRating = cardRatingMatch ? parseFloat(cardRatingMatch[1]) : 0;
+                var cardCuisine = $(this).data('cuisine').toLowerCase();
+
+                var match = true;
+
+                // Check search query
+                if(searchQuery){
+                    if(!cardName.includes(searchQuery)){
+                        match = false;
+                    }
+                }
+
+                // Check rating
+                if(selectedRating){
+                    if(cardRating < parseFloat(selectedRating)){
+                        match = false;
+                    }
+                }
+
+                // Check cuisine
+                if(selectedCuisine){
+                    if(!cardCuisine.includes(selectedCuisine)){
+                        match = false;
+                    }
+                }
+
+                // Toggle visibility
+                $(this).toggle(match);
+            });
+        }
+
+        // Debounce function to limit the rate at which a function can fire.
+        function debounce(func, delay){
+            let debounceTimer;
+            return function(){
+                const context = this;
+                const args = arguments;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => func.apply(context, args), delay);
+            }
+        }
+
+        // Event listeners for filters with debounce
+        $('#favorite-search').on('keyup', debounce(function(){
+            filterFavorites();
+        }, 300)); // 300ms delay
+
+        $('#favorite-filter-rating').on('change', function(){
+            filterFavorites();
+        });
+
+        $('#favorite-filter-cuisine').on('keyup change', debounce(function(){
+            filterFavorites();
+        }, 300)); // 300ms delay
+
+        // Remove Favorite Button Click
+        $('.remove-favorite-btn').on('click', function(){
+            var place_id = $(this).data('place-id');
+            var card = $(this).closest('.favorite-card');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to remove this restaurant from your favorites?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff6347',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send AJAX POST request to remove_favorite
+                    $.ajax({
+                        url: "{% url 'remove_favorite' 'PLACE_ID' %}".replace('PLACE_ID', place_id),
+                        method: "POST",
+                        success: function(response){
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Removed!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Remove the card from the DOM
+                            card.fadeOut(500, function(){
+                                $(this).remove();
+                                // If no favorites left, show the no favorites message
+                                if ($('.favorite-card').length === 0) {
+                                    $('.favorites-grid').remove();
+                                    $('.favorites-container').append(`
+                                        <div class="alert alert-info text-center" role="alert">
+                                            You have not added any favorite restaurants yet. Start exploring and add your favorites!
+                                        </div>
+                                    `);
+                                }
+                            });
+                        },
+                        error: function(xhr){
+                            var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: errorMsg,
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -11,8 +11,8 @@
                     <h1 id="app-title">Atlanta Food Finder</h1>
                     <div class="buttons-container mt-4">
                         {% if user.is_authenticated %}
-                            <p>Welcome back, {{ user.username }}!</p>
-                            <p><a href="{% url 'map' %}" class="btn btn-primary">Search Restaurants</a></p>
+                            <p class="welcome-text">Welcome back, {{ user.username }}!</p>
+                            <p><a href="{% url 'map' %}" class="btn btn-danger">Search Restaurants</a></p>
                         {% else %}
                             <div class="d-flex justify-content-center">
                                 <a href="{% url 'login' %}" class="btn btn-primary me-2">Login</a>
@@ -76,6 +76,35 @@
             /* Removed fixed width and margins for better responsiveness */
             margin: 0;
             padding: 0;
+        }
+
+        /* Welcome Text Styles */
+        .welcome-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #ff6347; /* Match navbar color */
+            border-color: #ff6347;
+        }
+
+        .btn-primary:hover {
+            background-color: #e5533d;
+            border-color: #e5533d;
+        }
+
+        .btn-danger {
+            background-color: #ff6347; /* Match navbar color */
+            border-color: #ff6347;
+        }
+
+        .btn-danger:hover {
+            background-color: #e5533d;
+            border-color: #e5533d;
         }
 
         /* Responsive Adjustments */

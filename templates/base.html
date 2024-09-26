@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One:wght@400&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -28,8 +28,11 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
         <div class="container-fluid">
-            <!-- Brand Logo -->
-            <a class="navbar-brand" href="{% url 'home' %}">Atlanta Food Finder</a>
+            <!-- Brand Logo with Image -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <img src="{% static 'images/logo.png' %}" alt="App Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+                Atlanta Food Finder
+            </a>
             
             <!-- Toggle Button for Mobile View -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -54,8 +57,8 @@
                     
                     <!-- Favorites Link -->
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" 
-                           href="{% url 'profile' %}">Favorites</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'favorites' %}active{% endif %}" 
+                           href="{% url 'favorites' %}">Favorites</a>
                     </li>
                     
                     <!-- Authentication Links -->

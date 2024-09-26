@@ -1,4 +1,5 @@
-# restaurants/views.py
+# CS2340App/restaurants/views.py
+
 import logging
 import requests
 from django.shortcuts import render, redirect, get_object_or_404
@@ -38,6 +39,7 @@ KNOWN_CUISINES = [
     # Add more as needed
 ]
 
+
 # Home Page View
 def home(request):
     """
@@ -45,6 +47,7 @@ def home(request):
     and provides Login and Sign Up buttons.
     """
     return render(request, 'restaurants/home.html')
+
 
 # Registration View
 def register(request):
@@ -54,18 +57,20 @@ def register(request):
             user = form.save()
             login(request, user)  # Automatically log in the user after registration
             logger.info(f"New user registered: {user.username}")
-            return redirect('profile')  # Redirect to profile or home page
+            return redirect('favorites')  # Redirect to favorites page after registration
         else:
             logger.warning(f"Registration failed: {form.errors}")
     else:
         form = RegisterForm()
     return render(request, 'registration/register.html', {'form': form})
 
+
 # Profile View with Favorites
 @login_required
 def profile(request):
     favorites = Favorite.objects.filter(user=request.user)
     return render(request, 'registration/profile.html', {'favorites': favorites})
+
 
 # Add Favorite View
 @login_required
@@ -77,7 +82,8 @@ def add_favorite(request):
         rating = request.POST.get('rating')  # Rating can remain as is; it's optional
 
         # Logging received data
-        logger.debug(f"Received add_favorite POST data: place_id={place_id}, name={name}, address={address}, rating={rating}")
+        logger.debug(
+            f"Received add_favorite POST data: place_id={place_id}, name={name}, address={address}, rating={rating}")
 
         if not place_id:
             logger.warning(f"Attempted to add favorite without place_id: name={name}, address={address}")
@@ -207,7 +213,7 @@ def map_view(request):
     # Pass user's favorite place_ids to the template for determining favorite status
     user_favorites = []
     if request.user.is_authenticated:
-        user_favorites = list(request.user.favorites.all().values_list('place_id', flat=True))
+        user_favorites = list(Favorite.objects.filter(user=request.user).values_list('place_id', flat=True))
     context = {
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
         'user_favorites': user_favorites,
@@ -215,7 +221,89 @@ def map_view(request):
     return render(request, 'restaurants/map.html', context)
 
 
+# Favorites Page View
+@login_required
+def favorites(request):
+    user = request.user
+    favorites = Favorite.objects.filter(user=user)
+
+    # Enrich favorites with image URLs using Google Places API (optional)
+    enriched_favorites = []
+    cuisine_set = set()
+    for fav in favorites:
+        place_id = fav.place_id
+        # Fetch details from Google Places API
+        params = {
+            'place_id': place_id,
+            'fields': 'name,rating,formatted_address,photo,types',
+            'key': API_KEY
+        }
+        try:
+            response = requests.get('https://maps.googleapis.com/maps/api/place/details/json', params=params)
+            data = response.json()
+            if data.get('status') == 'OK':
+                result = data.get('result', {})
+                # Get photo reference if available
+                photo_reference = result.get('photos', [{}])[0].get('photo_reference', None)
+                if photo_reference:
+                    photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_reference}&key={API_KEY}"
+                else:
+                    photo_url = None
+                # Extract cuisine type from types
+                cuisine_type = "Unknown"
+                for t in result.get('types', []):
+                    if t in SPECIFIC_CUISINE_TYPES:
+                        cuisine_type = t.replace('_restaurant', '').title()
+                        cuisine_set.add(cuisine_type)
+                        break
+                # Fallback: Infer from name
+                if cuisine_type == "Unknown":
+                    for cuisine in KNOWN_CUISINES:
+                        if cuisine.lower() in result.get('name', '').lower():
+                            cuisine_type = cuisine
+                            cuisine_set.add(cuisine_type)
+                            break
+                enriched_favorites.append({
+                    'name': result.get('name', 'N/A'),
+                    'address': result.get('formatted_address', 'N/A'),
+                    'rating': result.get('rating', 'N/A'),
+                    'place_id': place_id,
+                    'image_url': photo_url,
+                    'cuisine_type': cuisine_type
+                })
+            else:
+                logger.error(
+                    f"Google Places API error for place_id={place_id}: "
+                    f"status={data.get('status')}, error_message={data.get('error_message', '')}"
+                )
+                enriched_favorites.append({
+                    'name': fav.name,
+                    'address': fav.address,
+                    'rating': fav.rating,
+                    'place_id': place_id,
+                    'image_url': None,
+                    'cuisine_type': fav.cuisine_type
+                })
+        except Exception as e:
+            logger.exception(f"Exception while fetching place details for place_id={place_id}: {e}")
+            enriched_favorites.append({
+                'name': fav.name,
+                'address': fav.address,
+                'rating': fav.rating,
+                'place_id': place_id,
+                'image_url': None,
+                'cuisine_type': fav.cuisine_type
+            })
+
+    context = {
+        'favorites': enriched_favorites,
+        'cuisine_options': list(cuisine_set)  # Pass as a list instead of a concatenated string
+    }
+    return render(request, 'restaurants/favorites.html', context)
+
+
 # Restaurant Detail View
+@login_required
 def restaurant_detail(request, place_id):
     # Attempt to retrieve the Restaurant object from the database
     restaurant = Restaurant.objects.filter(place_id=place_id).first()
@@ -225,7 +313,7 @@ def restaurant_detail(request, place_id):
             url = (
                 f"https://maps.googleapis.com/maps/api/place/details/json?"
                 f"place_id={place_id}&"
-                f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours,reviews&"
+                f"fields=name,rating,formatted_address,geometry,types,formatted_phone_number,opening_hours,reviews&"
                 f"key={API_KEY}"
             )
             response = requests.get(url)
@@ -289,7 +377,7 @@ def restaurant_detail(request, place_id):
         url = (
             f"https://maps.googleapis.com/maps/api/place/details/json?"
             f"place_id={place_id}&"
-            f"fields=name,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours,reviews&"
+            f"fields=name,rating,formatted_address,geometry,rating,types,formatted_phone_number,opening_hours,reviews&"
             f"key={API_KEY}"
         )
         response = requests.get(url)

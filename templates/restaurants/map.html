@@ -1,4 +1,4 @@
-<!-- CS2340App/templates/restaurants/map.html -->
+<!-- CS2340App/restaurants/templates/restaurants/map.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -11,32 +11,41 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Restaurant Search</h1>
-    <!-- Search and Filter Form -->
-    <div class="search-container">
-        <input type="text" id="search-name" placeholder="Search by name">
-        <input type="text" id="search-cuisine" placeholder="Search by cuisine type">
-        <input type="text" id="search-location" placeholder="Search by location">
-        <select id="filter-rating">
-            <option value="">Filter by rating</option>
-            <option value="1">1 star & up</option>
-            <option value="2">2 stars & up</option>
-            <option value="3">3 stars & up</option>
-            <option value="4">4 stars & up</option>
-            <option value="5">5 stars</option>
-        </select>
-        <select id="filter-distance">
-            <option value="">Filter by distance</option>
-            <option value="1000">1 km & up</option>
-            <option value="2000">2 km & up</option>
-            <option value="5000">5 km & up</option>
-            <option value="10000">10 km & up</option>
-        </select>
-        <button id="search-button" class="btn">Search</button>
-    </div>
+    <div class="search-page-container">
+        <!-- Top Section with Background Image and Search Text -->
+        <div class="search-background-section">
+            <div class="search-background-overlay"></div>
+            <div class="search-background-content">
+                <h1 class="search-title">Restaurant Search</h1>
+            </div>
+        </div>
 
-    <!-- Map Container -->
-    <div id="map" style="width: 100%; height: 600px;"></div>
+        <!-- Search Filters -->
+        <div class="search-filters">
+            <input type="text" id="search-name" placeholder="Search by name">
+            <input type="text" id="search-cuisine" placeholder="Search by cuisine type">
+            <input type="text" id="search-location" placeholder="Search by location">
+            <select id="filter-rating">
+                <option value="">Filter by rating</option>
+                <option value="1">1 star & up</option>
+                <option value="2">2 stars & up</option>
+                <option value="3">3 stars & up</option>
+                <option value="4">4 stars & up</option>
+                <option value="5">5 stars</option>
+            </select>
+            <select id="filter-distance">
+                <option value="">Filter by distance</option>
+                <option value="1000">1 km & up</option>
+                <option value="2000">2 km & up</option>
+                <option value="5000">5 km & up</option>
+                <option value="10000">10 km & up</option>
+            </select>
+            <button id="search-button" class="btn btn-primary">Search</button>
+        </div>
+
+        <!-- Map Container -->
+        <div id="map" style="height: 600px;"></div>
+    </div>
 
     <!-- JavaScript for Map and Search Functionality -->
     <script>
@@ -216,15 +225,15 @@
                 service.getDetails(
                     {
                         placeId: place.place_id,
-                        fields: ['name', 'formatted_address', 'rating', 'reviews', 'opening_hours', 'place_id']  // Added 'place_id' here
+                        fields: ['name', 'formatted_address', 'rating', 'reviews', 'place_id']  // Added 'place_id' here
                     },
                     (details, status) => {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
                             let favoriteButton = '';
                             if (userFavorites.includes(details.place_id)) {
-                                favoriteButton = '<button class="btn remove favorite-button" data-place-id="' + details.place_id + '">Remove from Favorites</button>';
+                                favoriteButton = '<button class="btn btn-danger remove favorite-button" data-place-id="' + details.place_id + '">Remove from Favorites</button>';
                             } else {
-                                favoriteButton = '<button class="btn add favorite-button" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
+                                favoriteButton = '<button class="btn btn-primary add favorite-button" data-place-id="' + details.place_id + '" data-name="' + (details.name || 'Unknown') + '" data-address="' + (details.formatted_address || 'No address available') + '" data-rating="' + (details.rating || '') + '">Add to Favorites</button>';
                             }
 
                             const detailUrl = '/restaurant/' + details.place_id + '/';  // Update this path if your URL patterns differ
@@ -234,7 +243,7 @@
                                     '<h3>' + (details.name || 'Unknown') + '</h3>' +
                                     '<p>Address: ' + (details.formatted_address || 'No address available') + '</p>' +
                                     '<p>Rating: ' + (details.rating || 'No rating available') + '</p>' +
-                                    '<p><a href="' + detailUrl + '" class="btn" style="background-color: #555;">View more details</a></p>' +
+                                    '<p><a href="' + detailUrl + '" class="btn btn-secondary">View More Details</a></p>' +
                                     favoriteButton +
                                 '</div>';
                             infoWindow.setContent(content);
@@ -254,7 +263,7 @@
 
         // Function to attach event handlers to favorite buttons
         function attachFavoriteHandlers(){
-            $('.favorite-button.add').click(function(){
+            $('.favorite-button.add').off('click').on('click', function(){
                 const place_id = $(this).data('place-id');
                 const name = $(this).data('name');
                 const address = $(this).data('address');
@@ -272,7 +281,7 @@
                 addFavorite(place_id, name, address, rating);
             });
 
-            $('.favorite-button.remove').click(function(){
+            $('.favorite-button.remove').off('click').on('click', function(){
                 const place_id = $(this).data('place-id');
 
                 if (!place_id) {
@@ -318,15 +327,16 @@
                         text: response.message,
                         timer: 2000,
                         showConfirmButton: false
+                    }).then(() => {
+                        // Update the userFavorites array
+                        if (!userFavorites.includes(place_id)) {
+                            userFavorites.push(place_id);
+                        }
+                        infoWindow.close();
                     });
-                    infoWindow.close();
-                    // Update the userFavorites array
-                    if (!userFavorites.includes(place_id)) {
-                        userFavorites.push(place_id);
-                    }
                 },
                 error: function(xhr){
-                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -356,16 +366,17 @@
                         text: response.message,
                         timer: 2000,
                         showConfirmButton: false
+                    }).then(() => {
+                        // Remove the place_id from userFavorites array
+                        const index = userFavorites.indexOf(place_id);
+                        if (index > -1) {
+                            userFavorites.splice(index, 1);
+                        }
+                        infoWindow.close();
                     });
-                    infoWindow.close();
-                    // Remove the place_id from userFavorites array
-                    const index = userFavorites.indexOf(place_id);
-                    if (index > -1) {
-                        userFavorites.splice(index, 1);
-                    }
                 },
                 error: function(xhr){
-                    const errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
+                    var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred.';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -382,7 +393,7 @@
             });
 
             // Allow pressing Enter to trigger search
-            $('.search-container input, .search-container select').keypress(function(e){
+            $('.search-filters input, .search-filters select').keypress(function(e){
                 if(e.which == 13){ // Enter key
                     e.preventDefault();
                     handleSearchButtonClick();
