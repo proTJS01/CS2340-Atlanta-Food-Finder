@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="Final User Story A,C,D,E, and F">
-      <change afterPath="$PROJECT_DIR$/static/images/restaurant1.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/restaurant2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/restaurant3.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/restaurant_header.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/restaurants/restaurant_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/images/restaurant_header.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/restaurant_header.jpg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +123,7 @@
       <workItem from="1727139337759" duration="18004000" />
       <workItem from="1727206783368" duration="8524000" />
       <workItem from="1727288607223" duration="2968000" />
-      <workItem from="1727291609865" duration="24278000" />
+      <workItem from="1727291609865" duration="24828000" />
     </task>
     <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
       <option name="closed" value="true" />
@@ -196,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727331971468</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727333241817</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1727333241817</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

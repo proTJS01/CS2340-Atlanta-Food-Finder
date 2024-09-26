@@ -71,7 +71,22 @@
                         {% if google_reviews %}
                             {% for review in google_reviews %}
                                 <div class="mb-3">
-                                    <h5><i class="fas fa-user me-2 text-primary"></i>{{ review.author_name }} <span class="badge bg-warning text-dark">{{ review.rating }}</span></h5>
+                                    <h5>
+                                        <i class="fas fa-user me-2 text-primary"></i>{{ review.author_name }}
+                                        {% if review.rating == 5 %}
+                                            <span class="badge badge-rating-5">{{ review.rating }}/5</span>
+                                        {% elif review.rating == 4 %}
+                                            <span class="badge badge-rating-4">{{ review.rating }}/5</span>
+                                        {% elif review.rating == 3 %}
+                                            <span class="badge badge-rating-3">{{ review.rating }}/5</span>
+                                        {% elif review.rating == 2 %}
+                                            <span class="badge badge-rating-2">{{ review.rating }}/5</span>
+                                        {% elif review.rating == 1 %}
+                                            <span class="badge badge-rating-1">{{ review.rating }}/5</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ review.rating }}/5</span>
+                                        {% endif %}
+                                    </h5>
                                     <p>{{ review.text }}</p>
                                     <small class="text-muted">{{ review.relative_time_description }}</small>
                                 </div>
@@ -89,7 +104,22 @@
                         <h3 class="card-title mb-3">Your Reviews</h3>
                         {% for review in user_reviews %}
                             <div class="mb-3">
-                                <h5><i class="fas fa-user-circle me-2 text-primary"></i>{{ review.user.username }} <span class="badge bg-warning text-dark">{{ review.rating }}</span></h5>
+                                <h5>
+                                    <i class="fas fa-user-circle me-2 text-primary"></i>{{ review.user.username }}
+                                    {% if review.rating == 5 %}
+                                        <span class="badge badge-rating-5">{{ review.rating }}/5</span>
+                                    {% elif review.rating == 4 %}
+                                        <span class="badge badge-rating-4">{{ review.rating }}/5</span>
+                                    {% elif review.rating == 3 %}
+                                        <span class="badge badge-rating-3">{{ review.rating }}/5</span>
+                                    {% elif review.rating == 2 %}
+                                        <span class="badge badge-rating-2">{{ review.rating }}/5</span>
+                                    {% elif review.rating == 1 %}
+                                        <span class="badge badge-rating-1">{{ review.rating }}/5</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ review.rating }}/5</span>
+                                    {% endif %}
+                                </h5>
                                 <p>{{ review.comment }}</p>
                                 <small class="text-muted">Posted on {{ review.created_at|date:"F j, Y, g:i a" }}</small>
                             </div>
