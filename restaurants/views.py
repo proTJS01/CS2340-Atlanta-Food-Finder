@@ -89,7 +89,7 @@ def add_favorite(request):
             url = (
                 f"https://maps.googleapis.com/maps/api/place/details/json?"
                 f"place_id={place_id}&"
-                f"fields=name,formatted_address,geometry,types,formatted_phone_number&"
+                f"fields=place_id,name,rating,formatted_address,geometry,types,formatted_phone_number,opening_hours,reviews&"
                 f"key={API_KEY}"
             )
             response = requests.get(url)
@@ -291,7 +291,7 @@ def favorites(request):
 
     context = {
         'favorites': enriched_favorites,
-        'cuisine_options': list(cuisine_set)  # Pass as a list instead of a concatenated string
+        'cuisine_options': list(cuisine_set),  # Pass as a list instead of a concatenated string
     }
     return render(request, 'restaurants/favorites.html', context)
 
@@ -306,7 +306,7 @@ def restaurant_detail(request, place_id):
             url = (
                 f"https://maps.googleapis.com/maps/api/place/details/json?"
                 f"place_id={place_id}&"
-                f"fields=name,rating,formatted_address,geometry,types,formatted_phone_number,opening_hours,reviews&"
+                f"fields=place_id,name,rating,formatted_address,geometry,types,formatted_phone_number,opening_hours,reviews&"
                 f"key={API_KEY}"
             )
             response = requests.get(url)
@@ -438,6 +438,7 @@ def restaurant_detail(request, place_id):
                 'latitude': restaurant.latitude,  # Pass latitude
                 'longitude': restaurant.longitude,  # Pass longitude
                 'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,  # Pass API Key
+                'place_id': place_id,
             }
             return render(request, 'restaurants/restaurant_detail.html', context)
         else:

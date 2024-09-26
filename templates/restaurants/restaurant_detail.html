@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Main Details Section -->
         <div class="row">
             <!-- Left Column: Details and Reviews -->
@@ -40,7 +40,7 @@
                         <h3 class="card-title">Restaurant Information</h3>
                         <p><i class="fas fa-map-marker-alt me-2 text-danger"></i><strong>Address:</strong> {{ details.formatted_address|default:"No address available" }}</p>
                         <p><i class="fas fa-phone me-2 text-danger"></i><strong>Phone:</strong> {{ details.formatted_phone_number|default:"No phone number available" }}</p>
-                        <p><i class="fas fa-utensils me-2 text-danger"></i><strong>Types:</strong> 
+                        <p><i class="fas fa-utensils me-2 text-danger"></i><strong>Types:</strong>
                             {% if details.types %}
                                 {% for type in details.types %}
                                     {{ type|title }}{% if not forloop.last %}, {% endif %}
@@ -196,11 +196,11 @@
                     <div class="card-body text-center">
                         {% if user.is_authenticated %}
                             {% if is_favorite %}
-                                <button class="btn btn-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-action="remove">
+                                <button class="btn btn-danger btn-lg favorite-button" data-place-id="{{ place_id }}" data-action="remove">
                                     <i class="fas fa-heart-broken me-2"></i> Remove from Favorites
                                 </button>
                             {% else %}
-                                <button class="btn btn-outline-danger btn-lg favorite-button" data-place-id="{{ details.place_id }}" data-action="add" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">
+                                <button class="btn btn-outline-danger btn-lg favorite-button" data-place-id="{{ place_id }}" data-action="add" data-name="{{ details.name|default:"Unknown" }}" data-address="{{ details.formatted_address|default:"No address available" }}" data-rating="{{ details.rating|default:"" }}">
                                     <i class="fas fa-heart me-2"></i> Add to Favorites
                                 </button>
                             {% endif %}
