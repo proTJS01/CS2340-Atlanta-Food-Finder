@@ -1,68 +1,37 @@
 <!-- CS2340App/templates/restaurants/register.html -->
 {% extends 'base.html' %}
 
-{% block content %}
-    <div class="form-container">
-        <h2>Register</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn">Sign Up</button>
-        </form>
-        <p style="text-align: center; margin-top: 10px;">Already have an account? <a href="{% url 'login' %}" class="btn">Login here</a>.</p>
-    </div>
+{% block extra_head %}
+    <!-- No additional styles needed as they are in styles.css -->
 {% endblock %}
 
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register - Atlanta Food Finder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        .form-container {
-            max-width: 400px;
-            margin: auto;
-        }
-        .form-container h2 {
-            text-align: center;
-        }
-        .form-container form {
-            border: 1px solid #ccc;
-            padding: 30px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .form-container form button {
-            width: 100%;
-            padding: 10px;
-            background-color: #ff6347;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .form-container form button:hover {
-            background-color: #ff4500;
-        }
-        .form-container p {
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h2>Register</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+{% block content %}
+    <div class="auth-background">
+        <div class="form-container">
+            <h2 class="text-center mb-4">Register</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="mb-4">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="mb-4">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                </div>
+                <div class="mb-4">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                </div>
+                <button type="submit" class="btn-custom">Sign Up</button>
+            </form>
+            <div class="auth-links">
+                <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+{% endblock %}

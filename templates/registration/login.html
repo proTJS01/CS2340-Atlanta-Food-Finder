@@ -1,80 +1,33 @@
 <!-- CS2340App/templates/registration/login.html -->
 {% extends 'base.html' %}
 
-{% block content %}
-    <div class="form-container">
-        <h2>Login</h2>
-        {% if form.errors %}
-            <p class="error-message">Invalid username or password.</p>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn">Login</button>
-        </form>
-        <p style="text-align: center; margin-top: 10px;"><a href="{% url 'password_reset' %}" class="btn" style="background-color: #555;">Forgot password?</a></p>
-        <p style="text-align: center; margin-top: 10px;">Don't have an account? <a href="{% url 'register' %}" class="btn">Register here</a>.</p>
-    </div>
+{% block extra_head %}
+    <!-- No additional styles needed as they are in styles.css -->
 {% endblock %}
 
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - Atlanta Food Finder</title>
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 50px;
-    }
-    .form-container {
-        max-width: 400px;
-        margin: auto;
-    }
-    .form-container h2 {
-        text-align: center;
-    }
-    .form-container form {
-        border: 1px solid #ccc;
-        padding: 30px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    .form-container form button {
-        width: 100%;
-        padding: 10px;
-        background-color: #ff6347;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 3px;
-    }
-    .form-container form button:hover {
-        background-color: #ff4500;
-    }
-    .form-container p {
-        text-align: center;
-    }
-    .error-message {
-        color: red;
-        text-align: center;
-    }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h2>Login</h2>
-        {% if form.errors %}
-            <p class="error-message">Invalid username or password.</p>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Login</button>
-        </form>
-        <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
-        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+{% block content %}
+    <div class="auth-background">
+        <div class="form-container">
+            <h2 class="text-center mb-4">Login</h2>
+            {% if form.errors %}
+                <p class="error-message">Invalid username or password.</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="mb-4">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn-custom">Login</button>
+            </form>
+            <div class="auth-links">
+                <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+                <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+{% endblock %}

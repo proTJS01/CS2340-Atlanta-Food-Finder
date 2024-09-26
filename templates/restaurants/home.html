@@ -10,14 +10,13 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            height: 100vh; /* Full viewport height */
+            height: calc(100vh - 56px); /* Full viewport height minus navbar height */
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
-            text-shadow: 2px 2px 4px #000;
             position: relative;
         }
+
         /* Overlay for better text readability */
         .home-overlay {
             background-color: rgba(0, 0, 0, 0.5);
@@ -28,14 +27,41 @@
             height: 100%;
             z-index: 1;
         }
+
         /* Content within the background */
         .home-content {
             position: relative;
             z-index: 2;
             text-align: center;
+            color: white;
         }
+
+        /* "Atlanta Food Finder" Text Styles */
+        .home-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+}
+
+        #app-title {
+            font-family: 'Julius Sans One', sans-serif;
+            font-weight: 400;
+            font-size: 64px;
+            line-height: 69.82px;
+            text-align: center;
+    /* Additional styles as needed */
+}
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
+            #app-title {
+                width: 100%;
+                margin-left: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
             .home-content h1 {
                 font-size: 2em;
             }
@@ -52,7 +78,7 @@
     <div class="home-background">
         <div class="home-overlay"></div>
         <div class="home-content">
-            <h1>Atlanta Food Finder</h1>
+            <h1 id="app-title">Atlanta Food Finder</h1>
             <div style="margin-top: 30px;">
                 {% if user.is_authenticated %}
                     <p>Welcome back, {{ user.username }}!</p>
