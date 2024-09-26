@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="Final User Story A,C,D,E, and F">
-      <change beforePath="$PROJECT_DIR$/static/images/restaurant_header.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/images/restaurant_header.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,8 +20,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
-        <option value="HTML File" />
         <option value="CSS File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -123,7 +124,7 @@
       <workItem from="1727139337759" duration="18004000" />
       <workItem from="1727206783368" duration="8524000" />
       <workItem from="1727288607223" duration="2968000" />
-      <workItem from="1727291609865" duration="24828000" />
+      <workItem from="1727291609865" duration="33125000" />
     </task>
     <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
       <option name="closed" value="true" />
@@ -197,7 +198,31 @@
       <option name="project" value="LOCAL" />
       <updated>1727333241817</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727333792185</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1727333792185</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727333990728</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1727333990728</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727341485921</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1727341485921</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
