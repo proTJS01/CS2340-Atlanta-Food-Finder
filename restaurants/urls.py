@@ -10,7 +10,7 @@ urlpatterns = [
     # path('profile/', views.profile, name='profile'),  # Removed profile URL
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     # Login
-    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),  # Logout
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),  # Logout with redirection
     path('accounts/signup/', views.signup, name='signup'),  # Corrected Name
     path('favorites/', views.favorites, name='favorites'),  # Favorites page
     path('add_favorite/', views.add_favorite, name='add_favorite'),  # Add favorite

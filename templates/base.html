@@ -63,9 +63,14 @@
                     
                     <!-- Authentication Links -->
                     {% if user.is_authenticated %}
-                        <!-- Logout Link -->
+                        <!-- Logout Form -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none; background: none;">
+                                    Logout
+                                </button>
+                            </form>
                         </li>
                     {% else %}
                         <!-- Login Link -->
@@ -74,7 +79,7 @@
                                href="{% url 'login' %}">Login</a>
                         </li>
                         
-                        <!-- **Sign Up Link Updated to Use 'signup' URL Name** -->
+                        <!-- Sign Up Link -->
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" 
                                href="{% url 'signup' %}">Sign Up</a>
