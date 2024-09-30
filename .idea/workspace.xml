@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caa6ae6c-5ede-45bf-9abd-87063227833b" name="Changes" comment="Final User Story A,C,D,E, and F">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,6 +27,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -127,7 +129,7 @@
       <workItem from="1727366182392" duration="18162000" />
       <workItem from="1727417224955" duration="464000" />
       <workItem from="1727495268889" duration="796000" />
-      <workItem from="1727724463699" duration="2529000" />
+      <workItem from="1727724463699" duration="3168000" />
     </task>
     <task id="LOCAL-00001" summary="User Story A,C,D,E, and F">
       <option name="closed" value="true" />
@@ -289,7 +291,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727726494961</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Final User Story A,C,D,E, and F">
+      <option name="closed" value="true" />
+      <created>1727727232289</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1727727232289</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
