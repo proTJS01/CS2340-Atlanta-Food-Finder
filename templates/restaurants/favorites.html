@@ -16,9 +16,6 @@
                 <input type="text" id="favorite-search" class="form-control" placeholder="Search favorites by name" aria-label="Search favorites by name">
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12">
-                <input type="text" id="favorite-filter-cuisine" class="form-control" placeholder="Search by cuisine" aria-label="Search by cuisine">
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-12">
                 <select id="favorite-filter-rating" class="form-select" aria-label="Filter by rating">
                     <option value="">Filter by rating</option>
                     <option value="5">5 stars</option>
@@ -139,14 +136,12 @@
         function filterFavorites(){
             var searchQuery = $('#favorite-search').val().toLowerCase();
             var selectedRating = $('#favorite-filter-rating').val();
-            var selectedCuisine = $('#favorite-filter-cuisine').val().toLowerCase();
 
             $('.favorite-card').each(function(){
                 var cardName = $(this).find('.card-title').text().toLowerCase();
                 var cardRatingText = $(this).find('.card-text .fa-star').parent().text();
                 var cardRatingMatch = cardRatingText.match(/(\d+(\.\d+)?)/);
                 var cardRating = cardRatingMatch ? parseFloat(cardRatingMatch[1]) : 0;
-                var cardCuisine = $(this).data('cuisine').toLowerCase();
 
                 var match = true;
 
@@ -160,13 +155,6 @@
                 // Check rating
                 if(selectedRating){
                     if(cardRating < parseFloat(selectedRating)){
-                        match = false;
-                    }
-                }
-
-                // Check cuisine
-                if(selectedCuisine){
-                    if(!cardCuisine.includes(selectedCuisine)){
                         match = false;
                     }
                 }

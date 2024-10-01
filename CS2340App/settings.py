@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'restaurants',
     'widget_tweaks',
     'django_google_maps',  # Ensure this app is properly configured
@@ -56,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
 
 ROOT_URLCONF = 'CS2340App.urls'
@@ -135,10 +140,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Google Maps API Key
 GOOGLE_MAPS_API_KEY = 'AIzaSyCP6CL_9cDOgF4bPxxHWD-o7sg0_BUEhFI'  # Replace with your actual API key
 
-# Email Backend Configuration for Password Reset
-# For development, emails are printed to the console
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 # Redirect to home page after login
 LOGIN_REDIRECT_URL = 'home'
 
@@ -147,3 +148,14 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Optionally, specify the login URL if using Django's built-in authentication
 LOGIN_URL = 'login'
+
+# Email Backend Configuration for Password Reset
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your email provider's SMTP server
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Set in .env file
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Set in .env file
+DEFAULT_FROM_EMAIL = 'Atlanta Food Finder <atlfoodfinderteam9@gmail.com>'
+
+SITE_ID = 1

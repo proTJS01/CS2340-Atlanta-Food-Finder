@@ -10,7 +10,8 @@ urlpatterns = [
     # path('profile/', views.profile, name='profile'),  # Removed profile URL
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     # Login
-    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),  # Logout with redirection
+    path('accounts/logout/', auth_views.LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
+
     path('accounts/signup/', views.signup, name='signup'),  # Corrected Name
     path('favorites/', views.favorites, name='favorites'),  # Favorites page
     path('add_favorite/', views.add_favorite, name='add_favorite'),  # Add favorite
@@ -19,7 +20,16 @@ urlpatterns = [
 
     # Password Reset URLs
     path('accounts/password_reset/',
-         auth_views.PasswordResetView.as_view(template_name='registration/password_reset.html'),
+         auth_views.PasswordResetView.as_view(
+             template_name='registration/password_reset.html',
+             email_template_name='registration/password_reset_email.html',
+             subject_template_name='registration/password_reset_subject.txt',
+             extra_context={
+                 'protocol': 'http',  # 'https' if your site uses SSL
+                 'domain': 'localhost:8000',  # Use your actual domain in production
+                 'site_name': 'ATLFoodFinder',
+             },
+         ),
          name='password_reset'),
     path('accounts/password_reset/done/',
          auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'),
